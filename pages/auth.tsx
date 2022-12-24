@@ -1,13 +1,14 @@
-import { supabase } from "../supabase/client";
 import { useFormik } from "formik";
-import { authFormSchema } from "../schema/FormSchemas";
-import { useState } from "react";
+import { authValidationSchema } from "../schema/FormSchemas";
 import { AuthError } from "@supabase/supabase-js";
+import { useUser } from "@supabase/auth-helpers-react";
+import { useState } from "react";
+import { SITE_URL } from "../config";
+import axios, { AxiosError } from "axios";
 import Router from "next/router";
-import { useAuth } from "../context/AuthContext";
 
 const Login: React.FC = () => {
-  const { user } = useAuth();
+  const user = useUser();
   if (user) {
     Router.push("/");
     return <></>;
@@ -24,27 +25,26 @@ const Login: React.FC = () => {
     });
 
   const authHandler = async () => {
-    const email = formik.values.username + "@dexlocalhost.com";
+    const username = formik.values.username;
     const password = formik.values.password;
-    let error: AuthError | null = null;
+    const userData = { username, password };
     setAuthError("");
 
-    if (formState == "Login") {
-      setStatus("Logging In . . .");
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      error = loginError;
+    try {
+      if (formState == "Login") {
+        setStatus("Logging In . . .");
+        await axios.post(`${SITE_URL}/api/auth/login`, userData);
+        Router.reload();
+      }
+      if (formState === "Signup") {
+        setStatus("Signing up . . ");
+        await axios.post(`${SITE_URL}/api/auth/register`, userData);
+        Router.reload();
+      }
+    } catch (error) {
+      const authError = error as AxiosError<{ error?: AuthError }>;
+      setAuthError(authError.response?.data.error?.message || authError.message);
     }
-
-    if (formState === "Signup") {
-      setStatus("Signing up . . ");
-      const { error: signUpError } = await supabase.auth.signUp({ email, password });
-      error = signUpError;
-    }
-
-    if (error) setAuthError(error.message);
     setStatus("");
   };
 
@@ -53,21 +53,21 @@ const Login: React.FC = () => {
       username: "",
       password: "",
     },
-    validationSchema: authFormSchema,
+    validationSchema: authValidationSchema,
     onSubmit: authHandler,
   });
   const usernameError = formik.touched.username && formik.errors.username;
   const passwordError = formik.touched.password && formik.errors.password;
   return (
     <form
-      className='flex flex-col justify-center items-center max-w-[320px] mx-auto'
+      className='flex flex-col mt-8 justify-center items-center max-w-[320px] mx-auto bg-gray- p-4'
       onSubmit={formik.handleSubmit}
     >
       <h2 className='text-5xl mb-4 font-Poppins'>{formState}</h2>
       {usernameError && <p className='text-left pl-2 w-[100%] text-red-600'>{usernameError}</p>}
       <input
         type='text'
-        className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
+        className='w-[100%] mb-4 p-2 bg-inputPri sha focus:bg-white rounded-md tracking-wide font-Poppins'
         placeholder='Username'
         id='username'
         name='username'
@@ -77,7 +77,7 @@ const Login: React.FC = () => {
       />
       {passwordError && <p className='text-left pl-2 w-[100%] text-red-600'>{passwordError}</p>}
       <input
-        className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
+        className='w-[100%] mb-4 p-2 bg-inputPri sha focus:bg-white rounded-md tracking-wide font-Poppins'
         placeholder='Password'
         type='password'
         id='password'

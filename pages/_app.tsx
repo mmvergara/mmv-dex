@@ -1,14 +1,24 @@
 import type { AppProps } from "next/app";
+import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { useState } from "react";
+import { ToastContainer } from "react-toastify";
 import Navbar from "../components/Layout/Navbar";
-import { AuthContextProvider } from "../context/AuthContext";
 import "../styles/globals.css";
-
+import "react-toastify/dist/ReactToastify.css";
 const App = ({ Component, pageProps }: AppProps) => {
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+
   return (
-    <AuthContextProvider>
-      <Navbar/>
+    <SessionContextProvider
+      supabaseClient={supabaseClient}
+      initialSession={pageProps.initialSession}
+    >
+      <Navbar />
+      <ToastContainer />
       <Component {...pageProps} />
-    </AuthContextProvider>
+    </SessionContextProvider>
   );
 };
+
 export default App;

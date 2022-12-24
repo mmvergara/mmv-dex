@@ -6,7 +6,8 @@ module.exports = {
       colors:{
         inputPri:"#edf2f7",
         purplePri:"#800080",
-        purpleSec:"#990099"
+        purpleSec:"#990099",
+        purpleTransparent:"#9900999a"
       },
       fontFamily: {
         Poppins: ["Poppins", "sans-serif"],

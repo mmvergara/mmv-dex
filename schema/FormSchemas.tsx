@@ -12,7 +12,7 @@ const passwordValidation = yup
   .trim()
   .required("Password field is required.");
 
-export const authFormSchema = yup.object({
+export const authValidationSchema = yup.object({
   username: usernameValidation,
   password: passwordValidation,
 });
