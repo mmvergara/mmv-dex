@@ -1,5 +1,6 @@
 import axios from "axios";
 import Head from "next/head";
+import { toast } from "react-toastify";
 import { SITE_URL } from "../config";
 import { supabase } from "../supabase/client";
 
@@ -11,9 +12,18 @@ export async function getServerSideProps() {
 export default function Home() {
   const signoutHandler = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.log("Signout");
-    }
+    let result = "Logout succcess";
+    if (error) result = "Logout unccessful";
+    toast.error(result, {
+      position: "top-left",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   return (

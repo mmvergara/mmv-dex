@@ -1,9 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .color {
-  color:#9900999a
+  color: #9900999a;
+}
+
+@layer components {
+  .navLink {
+    @apply cursor-pointer px-4 py-2 hover:bg-gray-300 transition-colors ease-in rounded-sm;
+  }
 }

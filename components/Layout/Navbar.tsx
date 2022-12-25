@@ -1,23 +1,31 @@
 "use client";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import Link from "next/link";
-import { MdReviews } from "react-icons/md";
-import { FiPlusSquare } from "react-icons/fi";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+} from "@chakra-ui/modal";
+import { RiLoginCircleFill } from "react-icons/ri";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
-import { ImHome } from "react-icons/im";
-import { RiLoginCircleFill, RiLogoutCircleFill } from "react-icons/ri";
-import { useEffect, useState } from "react";
+import { GrClose } from "react-icons/gr";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 const Navbar = () => {
   const supabase = useSupabaseClient();
   const user = useUser();
-
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
+  const handleClose = () => setDrawerOpen((prev) => !prev);
   const logoutHandler = async () => {
     const { error } = await supabase.auth.signOut();
     let logoutStatus = "Logout successful";
     if (error) logoutStatus = error.message;
-
     toast.error(logoutStatus, {
       position: "top-left",
       autoClose: 2000,
@@ -28,68 +36,66 @@ const Navbar = () => {
       progress: undefined,
       theme: "light",
     });
+    toggleDrawer();
   };
 
+  const username = user?.email?.split("@").slice(0, -1).join("");
+
   return (
-    <nav className='text-sm  text-black tracking-wide bg-gray-100 py-2 shadow-lg px-6  flex  justify-between items-center'>
-      <Link href='/' className=' text-2xl font-bold'>
+    <nav className='text-sm font-semibold font-Poppins text-black tracking-wide bg-gray-100 py-2 shadow-lg px-6  flex  justify-between items-center'>
+      <Link href='/' className='text-2xl font-bold'>
         // Dex //
       </Link>
-      <div className='flex gap-1 sm:gap-2 font-semibold font-Poppins'>
-        <Link
-          href='/'
-          className='px-4 py-2 hover:bg-gray-300 text-black transition-colors ease-in rounded-sm underline-offset-4'
-        >
+      <span className='flex'>
+        <Link href='/' className='navLink border-2 mr-2'>
           <span className='block sm:hidden text-xl '>
             <AiFillHome />
           </span>
           <span className='hidden sm:block'>Home</span>
         </Link>
-
-        {user && (
-          <>
-            <Link
-              href='/post/create'
-              className='px-4 py-2 hover:bg-gray-300 transition-colors ease-in rounded-sm  border-2'
-            >
-              <span className='block sm:hidden text-xl'>
-                <FiPlusSquare />
-              </span>
-              <span className='hidden sm:block'>Peer Review</span>
-            </Link>
-            <Link
-              href='/post/create'
-              className='px-4 py-2 hover:bg-gray-300 transition-colors ease-in rounded-sm  border-2'
-            >
-              <span className='block sm:hidden text-xl'>
-                <MdReviews />
-              </span>
-              <span className='hidden sm:block'>Peer Review</span>
-            </Link>
-          </>
-        )}
         {user ? (
-          <a
-            onClick={logoutHandler}
-            className='px-4 py-2 hover:bg-rose-600 transition-colors ease-in rounded-sm cursor-pointer border-2 pb-2 border-gray-100'
-          >
-            <span className='block sm:hidden text-xl'>
-              <RiLogoutCircleFill />
-            </span>
-            <span className='hidden sm:block'>Logout</span>
-          </a>
+          <p className='navLink text-xl' onClick={toggleDrawer}>
+            <GiHamburgerMenu />
+          </p>
         ) : (
-          <Link
-            href='/auth'
-            className='px-4 py-2 bg-purpleSec text-white transition-colors ease-in rounded-sm '
-          >
+          <Link href='/auth' className='navLink text-white bg-purplePri hover:bg-purpleSec '>
             <span className='block sm:hidden text-xl '>
               <RiLoginCircleFill />
             </span>
             <span className='hidden sm:block'>Login</span>
           </Link>
         )}
-      </div>
+      </span>
+
+      <Drawer isOpen={drawerOpen} placement='right' size='sm' onClose={handleClose}>
+        <DrawerOverlay onClick={toggleDrawer} />
+        <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
+          <DrawerHeader className='flex justify-between items-center'>
+            <h4 className='font-Poppins p-4'>Hello! {username}</h4>
+            <span onClick={toggleDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2' >
+              <GrClose />
+            </span>
+          </DrawerHeader>
+          <DrawerBody>
+            {user && (
+              <ul onClick={toggleDrawer} className='flex flex-col font-Poppins font-semibold'>
+                <Link href='/post/create' className='navLink py-4 '>
+                  My Profile
+                </Link>
+                <Link href='/post/create' className='navLink py-4 '>
+                  Create Post
+                </Link>
+                <Link href='/peer-review/create' className='navLink py-4 '>
+                  Create Review
+                </Link>
+                <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
+                  Logout
+                </span>
+              </ul>
+            )}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </nav>
   );
 };

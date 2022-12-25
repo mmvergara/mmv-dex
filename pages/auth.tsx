@@ -34,13 +34,13 @@ const Login: React.FC = () => {
       if (formState == "Login") {
         setStatus("Logging In . . .");
         await axios.post(`${SITE_URL}/api/auth/login`, userData);
-        Router.reload();
       }
       if (formState === "Signup") {
         setStatus("Signing up . . ");
         await axios.post(`${SITE_URL}/api/auth/register`, userData);
-        Router.reload();
       }
+      Router.push("/");
+      Router.reload();
     } catch (error) {
       const authError = error as AxiosError<{ error?: AuthError }>;
       setAuthError(authError.response?.data.error?.message || authError.message);
@@ -89,12 +89,12 @@ const Login: React.FC = () => {
       />
       <button
         type='submit'
-        className='w-[100%] p-2 bg-purplePri hover:bg-purpleSec rounded-md font-semibold text-white'
+        className='w-[100%] p-2  bg-purplePri hover:bg-purpleSec rounded-md font-semibold text-white'
       >
         {formState}
       </button>
       <p
-        className='text-purplePri mt-2 text-center hover:purpleSec underline underline-offset-2 cursor-pointer'
+        className='text-purplePri mt-8 text-center hover:purpleSec underline underline-offset-2 cursor-pointer'
         onClick={toggleFormState}
       >
         {formState === "Login"

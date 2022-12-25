@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { authCredentials } from "../../../types/api/auth-types";
 import { authValidationSchema } from "../../../schema/FormSchemas";
-import validator from "../../../utils/yup-validator";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import validator from "../../../utils/yup-validator";
 import allowedMethod from "../../../utils/check-method";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
