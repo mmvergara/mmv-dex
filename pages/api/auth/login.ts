@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { authCredentials } from "../../../types/api/auth-types";
-import { authValidationSchema } from "../../../schema/FormSchemas";
+import { authValidationSchema } from "../../../schemas/FormSchemas";
 import validator from "../../../utils/yup-validator";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import allowedMethod from "../../../utils/check-method";

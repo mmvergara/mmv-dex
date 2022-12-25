@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { authValidationSchema } from "../schema/FormSchemas";
+import { authValidationSchema } from "../schemas/FormSchemas";
 import { AuthError } from "@supabase/supabase-js";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
@@ -87,10 +87,7 @@ const Login: React.FC = () => {
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
       />
-      <button
-        type='submit'
-        className='w-[100%] p-2  bg-purplePri hover:bg-purpleSec rounded-md font-semibold text-white'
-      >
+      <button type='submit' className='formButton'>
         {formState}
       </button>
       <p

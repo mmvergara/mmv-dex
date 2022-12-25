@@ -1,13 +1,6 @@
 "use client";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-} from "@chakra-ui/modal";
+import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { RiLoginCircleFill } from "react-icons/ri";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
@@ -72,7 +65,7 @@ const Navbar = () => {
         <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
           <DrawerHeader className='flex justify-between items-center'>
             <h4 className='font-Poppins p-4'>Hello! {username}</h4>
-            <span onClick={toggleDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2' >
+            <span onClick={toggleDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2'>
               <GrClose />
             </span>
           </DrawerHeader>

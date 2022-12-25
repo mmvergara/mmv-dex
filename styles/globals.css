@@ -12,4 +12,8 @@
   .navLink {
     @apply cursor-pointer px-4 py-2 hover:bg-gray-300 transition-colors ease-in rounded-sm;
   }
+
+  .formButton {
+    @apply w-[100%] p-2  bg-purplePri hover:bg-purpleSec rounded-md font-semibold text-white;
+  }
 }

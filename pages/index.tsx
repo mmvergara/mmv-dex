@@ -1,31 +1,58 @@
-import axios from "axios";
 import Head from "next/head";
-import { toast } from "react-toastify";
-import { SITE_URL } from "../config";
-import { supabase } from "../supabase/client";
+import { postCardInfo } from "../types";
+import PostCard from "../components/post/PostCard";
 
-export async function getServerSideProps() {
-  const res = await axios.get(`${SITE_URL}/api/hello`, { withCredentials: true });
-  return { props: {} };
-}
-
-export default function Home() {
-  const signoutHandler = async () => {
-    const { error } = await supabase.auth.signOut();
-    let result = "Logout succcess";
-    if (error) result = "Logout unccessful";
-    toast.error(result, {
-      position: "top-left",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+export async function getStaticProps() {
+  return {
+    props: {
+      posts: [
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
+          name: "sss",
+          username: "sss",
+        },
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
+          name: "sss",
+          username: "sss",
+        },
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
+          name: "sss",
+          username: "sss",
+        },
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
+          name: "sss",
+          username: "sss",
+        },
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
+          name: "sss",
+          username: "sss",
+        },
+        {
+          id: "sss",
+          href: "sss",
+          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
+          name: "sss",
+          username: "sss",
+        },
+      ],
+    },
   };
-
+}
+export default function Home({ posts }: { posts: postCardInfo[] }) {
   return (
     <>
       <Head>
@@ -35,8 +62,14 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <h1>HOME </h1>
-        <h2 onClick={signoutHandler}>Signout </h2>
+        <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore</h1>
+        <section className='mx-auto max-w-2xl py-8 px-4 sm:py-10 sm:px-6 lg:max-w-7xl lg:px-8 font-Poppins'>
+          <div className='grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8'>
+            {posts.map((image) => (
+              <PostCard key={image.id} image={image} />
+            ))}
+          </div>
+        </section>
       </main>
     </>
   );
