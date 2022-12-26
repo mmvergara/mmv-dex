@@ -15,6 +15,7 @@ const PostCard: React.FC<{ image: postCardInfo }> = ({ image }: { image: postCar
           alt=''
           src={image.imageSrc}
           fill
+          sizes='300px'
           className={className(
             "duration-700 ease-in-out object-cover",
             isLoading ? "scale-110 blur-2xl grayscale" : "scale-100 blur-0 grayscale-0"

@@ -2,6 +2,8 @@ import { useFormik } from "formik";
 import { postValidationSchema } from "../../schemas/FormSchemas";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import Router, { useRouter } from "next/router";
+
 const CreatePost: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
@@ -13,7 +15,6 @@ const CreatePost: React.FC = () => {
     formData.append("description", formik.values.description);
     formData.append("imageUrl", image);
   };
-
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
     if (!image) {
@@ -34,7 +35,7 @@ const CreatePost: React.FC = () => {
     validationSchema: postValidationSchema,
     onSubmit: submitPostHandler,
   });
-  
+
   const postImageInputRef = useRef<HTMLInputElement>(null!);
   const clickUploadHandler = () => postImageInputRef.current.click();
   const titleError = formik.touched.title && formik.errors.title;

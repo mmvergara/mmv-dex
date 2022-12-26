@@ -29,7 +29,6 @@ const Navbar = () => {
       progress: undefined,
       theme: "light",
     });
-    toggleDrawer();
   };
 
   const username = user?.email?.split("@").slice(0, -1).join("");

@@ -3,7 +3,6 @@ import { authValidationSchema } from "../schemas/FormSchemas";
 import { AuthError } from "@supabase/supabase-js";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { SITE_URL } from "../config";
 import axios, { AxiosError } from "axios";
 import Router from "next/router";
 
@@ -13,7 +12,6 @@ const Login: React.FC = () => {
     Router.push("/");
     return <></>;
   }
-
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const [status, setStatus] = useState<null | string>(null);
   const [authError, setAuthError] = useState<null | string>(null);
@@ -29,15 +27,14 @@ const Login: React.FC = () => {
     const password = formik.values.password;
     const userData = { username, password };
     setAuthError("");
-
     try {
       if (formState == "Login") {
         setStatus("Logging In . . .");
-        await axios.post(`${SITE_URL}/api/auth/login`, userData);
+        await axios.post(`/api/auth/login`, userData);
       }
       if (formState === "Signup") {
         setStatus("Signing up . . ");
-        await axios.post(`${SITE_URL}/api/auth/register`, userData);
+        await axios.post(`/api/auth/register`, userData);
       }
       Router.push("/");
       Router.reload();
