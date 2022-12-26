@@ -1,15 +1,17 @@
 import { useFormik } from "formik";
 import { postValidationSchema } from "../../schemas/FormSchemas";
 import { useRef, useState, useEffect } from "react";
+import { GiSnowflake2 } from "react-icons/gi";
+import { toast } from "react-toastify";
+import axios, { AxiosError } from "axios";
 import Image from "next/image";
-import axios from "axios";
 
 const CreatePost: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
-  const [isCompressed, setIsCompressed] = useState<boolean>(false);
+  const [isCompressed, setIsCompressed] = useState<boolean>(true);
   const [uploadServer, setUploadServer] = useState<"supabase" | "vercel">("supabase");
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const submitPostHandler = async () => {
     if (!image) return;
     const formData = new FormData();
@@ -17,9 +19,17 @@ const CreatePost: React.FC = () => {
     formData.append("description", formik.values.description);
     formData.append("image", image);
     formData.append("compressed", String(isCompressed));
-
-    const res = await axios.put("/api/images/upload", formData);
-    console.log(res);
+    try {
+      setIsLoading(true);
+      await axios.put("/api/images/upload", formData);
+    } catch (e) {
+      const error = e as AxiosError<{ error: { message: string } }>;
+      console.log(error.response?.data.error.message || error.message);
+    }
+    toast.success("Post Uploaded");
+    setIsLoading(false);
+    setImage(null);
+    formik.resetForm();
   };
 
   useEffect(() => {
@@ -99,44 +109,50 @@ const CreatePost: React.FC = () => {
           <div className='relative w-[300px] h-[280px] pt-2 aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg mb-4 bg-gray-800 xl:aspect-w-7 xl:aspect-h-8'>
             <Image alt='post image preview' src={imgPreviewUrl} className='object-cover ' fill />
           </div>
+          <div className=' font-Poppins min-w-[200px] border-2 p-4 mb-4'>
+            <input
+              type='checkbox'
+              name='Upload Compressed'
+              id='compressed'
+              defaultChecked={isCompressed}
+              onChange={() => setIsCompressed((ps) => !ps)}
+            />{" "}
+            Compress Image
+            <br />
+            <div>
+              <input
+                type='radio'
+                name='server'
+                value='supabase'
+                checked={"supabase" === uploadServer}
+                onChange={(e) => {
+                  if (e.target.value === "supabase") setUploadServer("supabase");
+                }}
+              />{" "}
+              Supabase Server
+              <br />
+              <input
+                type='radio'
+                name='server'
+                value='vercel'
+                checked={"vercel" === uploadServer}
+                onChange={(e) => {
+                  if (e.target.value === "vercel") setUploadServer("vercel");
+                }}
+              />{" "}
+              Vercel Server
+            </div>
+          </div>
         </>
       )}
-      <div className=' font-Poppins min-w-[200px] border-2 p-4 mb-4'>
-        <input
-          type='checkbox'
-          name='Upload Compressed'
-          id='compressed'
-          defaultChecked={isCompressed}
-          onChange={() => setIsCompressed((ps) => !ps)}
-        />{" "}
-        Compress Image
-        <br />
-        <div>
-          <input
-            type='radio'
-            name='server'
-            value='supabase'
-            checked={"supabase" === uploadServer}
-            onChange={(e) => {
-              if (e.target.value === "supabase") setUploadServer("supabase");
-            }}
-          />{" "}
-          Supabase Server
-          <br />
-          <input
-            type='radio'
-            name='server'
-            value='vercel'
-            checked={"vercel" === uploadServer}
-            onChange={(e) => {
-              if (e.target.value === "vercel") setUploadServer("vercel");
-            }}
-          />{" "}
-          Vercel Server
-        </div>
-      </div>
-      <button type='submit' className='formButton'>
+
+      <button type='submit' className='formButton flex items-center justify-center gap-2'>
         Submit Post
+        {isLoading && (
+          <span className='spin'>
+            <GiSnowflake2 />
+          </span>
+        )}
       </button>
     </form>
   );
