@@ -1,58 +1,41 @@
 import Head from "next/head";
-import { postCardInfo } from "../types";
+import { postInfo } from "../types";
 import PostCard from "../components/post/PostCard";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { DatabaseTypes } from "../types/db/db-types";
+import { supabaseClient } from "../supabase/client";
+import { PostgrestError } from "@supabase/supabase-js";
+import { toast } from "react-toastify";
 
 export async function getStaticProps() {
+  const { data, error } = await supabaseClient.from("posts").select("*, profiles(id,username)");
+
+  let posts: postInfo[] = [];
+
+  if (data && data?.length > 0)
+    posts = data.map((p) => {
+      const { username } = p.profiles as { id: string; username: string };
+      return {
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        image_url: p.image_url,
+        author: username,
+      };
+    });
+
   return {
     props: {
-      posts: [
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
-          name: "sss",
-          username: "sss",
-        },
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
-          name: "sss",
-          username: "sss",
-        },
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
-          name: "sss",
-          username: "sss",
-        },
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
-          name: "sss",
-          username: "sss",
-        },
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/QvHKzBR/schedule.jpg",
-          name: "sss",
-          username: "sss",
-        },
-        {
-          id: "sss",
-          href: "sss",
-          imageSrc: "https://i.ibb.co/0FhX2nJ/Use-username-instead-of-email.png",
-          name: "sss",
-          username: "sss",
-        },
-      ],
+      posts,
+      error,
     },
   };
 }
-export default function Home({ posts }: { posts: postCardInfo[] }) {
+type HomeProps = { posts: postInfo[]; error: PostgrestError | null };
+export default function Home({ posts, error }: HomeProps) {
+  if (error) {
+    toast.error(error.message);
+  }
   return (
     <>
       <Head>
@@ -65,8 +48,8 @@ export default function Home({ posts }: { posts: postCardInfo[] }) {
         <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore</h1>
         <section className='mx-auto max-w-2xl py-8 px-4 sm:py-10 sm:px-6 lg:max-w-7xl lg:px-8 font-Poppins'>
           <div className='grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8'>
-            {posts.map((image) => (
-              <PostCard key={image.id} image={image} />
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
             ))}
           </div>
         </section>

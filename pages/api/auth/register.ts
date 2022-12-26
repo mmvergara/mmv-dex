@@ -25,6 +25,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Sign up
-  const { data, error } = await supabase.auth.signUp({ email: emailifiedUsername, password });
-  res.status(200).send({ data, error });
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.signUp({ email: emailifiedUsername, password });
+  if (!user) return;
+  console.log(user.id, "id");
+  const { count, data: ss } = await supabase
+    .from("profiles")
+    .update({ username })
+    .eq("id", user.id);
+
+  console.log({ count, ss });
+  res.status(200).send({ error });
 }

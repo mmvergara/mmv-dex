@@ -1,7 +1,7 @@
-export interface postCardInfo {
+export interface postInfo {
   id: number;
-  href: string;
-  imageSrc: string;
-  name: string;
-  username: string;
+  title: string;
+  description: string;
+  image_url: string;
+  author: string;
 }

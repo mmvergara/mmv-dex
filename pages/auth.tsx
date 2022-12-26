@@ -34,7 +34,7 @@ const Login: React.FC = () => {
       }
       if (formState === "Signup") {
         setStatus("Signing up . . ");
-        await axios.post(`/api/auth/register`, userData);
+        await axios.put(`/api/auth/register`, userData);
       }
       Router.push("/");
       Router.reload();

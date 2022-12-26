@@ -1,30 +1,78 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { authCredentials } from "../../../types/api/auth-types";
-import { authValidationSchema } from "../../../schemas/FormSchemas";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import validator from "../../../utils/yup-validator";
-import allowedMethod from "../../../utils/check-method";
 import { DatabaseTypes } from "../../../types/db/db-types";
-
+import formidable, { Formidable } from "formidable";
+import allowedMethod from "../../../utils/check-method";
+import sharp from "sharp";
+import newError from "../../../utils/newError";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
-  if (!allowedMethod(req, "PUT")) {
-    return res.status(405).send({ message: "Method not allowed" });
-  }
+  const form = new Formidable({ multiples: true, keepExtensions: true });
+  return new Promise((resolved, reject) => {
+    form.parse(req, async (err, fields, files) => {
+      try {
+        if (!allowedMethod(req, "PUT")) throw newError("Method not allowed", 405);
+        if (err) throw newError("Error parsing request", 500);
 
-  const { password, username } = req.body as authCredentials;
-  const emailifiedUsername = username + "@dexlocalhost.com";
+        //Check auth
+        const { data: user } = await supabase.auth.getSession();
+        if (!user.session) {
+          throw newError("Unauthorized / Session expired, try logging in again.", 401);
+        }
 
-  // Validate Request Body
-  const { isValid } = await validator(authValidationSchema, {
-    password,
-    username: emailifiedUsername,
+        // Compression (Options)
+        type postFormDataFields = { compressed: string; description: string; title: string };
+        const { compressed, title, description } = fields as postFormDataFields;
+        const img_is_compressed = compressed === "true";
+        let quality = 100;
+        let compressionLevel = 0;
+        if (img_is_compressed) {
+          quality = 2;
+          compressionLevel = 9;
+        }
+
+        const file = files.image as formidable.File;
+        const imgBuffer = await sharp(file.filepath)
+          .toFormat("png", { palette: true })
+          .png({ quality, compressionLevel })
+          .toBuffer();
+
+        // Upload Image
+        const { data: imgData, error: imgError } = await supabase.storage
+          .from("post-images")
+          .upload(Math.random().toString() + ".png", imgBuffer, {
+            upsert: false,
+            contentType: "image/png",
+          });
+        if (imgError) throw newError("Error uploading image", 409);
+
+        // Insert Post
+        const { data: imgPublicUrl } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(imgData?.path!);
+        const { error } = await supabase.from("posts").insert({
+          author: user.session.user.id,
+          description,
+          title,
+          img_is_compressed,
+          image_url: imgPublicUrl.publicUrl,
+        });
+        if (error) throw newError("Error submitting post", Number(error.code));
+
+        res.status(201).send({ data: { compressed, title, description }, error: null });
+        resolved({});
+      } catch (e) {
+        console.log(e);
+        const error = e as Error;
+        res.status(400).send({ data: null, error: { message: error.message } });
+        reject();
+      }
+    });
   });
-  if (!isValid) {
-    return res.status(422).send({ data: {}, error: { message: "Invalid inputs", code: 422 } });
-  }
-
-  // Sign up
-  const { data, error } = await supabase.auth.signUp({ email: emailifiedUsername, password });
-  res.status(200).send({ data, error });
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

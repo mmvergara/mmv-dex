@@ -21,15 +21,16 @@ const CreatePost: React.FC = () => {
     formData.append("compressed", String(isCompressed));
     try {
       setIsLoading(true);
-      await axios.put("/api/images/upload", formData);
+      await axios.put("/api/post/create", formData);
+      toast.success("Post Uploaded");
+      formik.resetForm();
+      setImage(null);
     } catch (e) {
       const error = e as AxiosError<{ error: { message: string } }>;
-      console.log(error.response?.data.error.message || error.message);
+      toast.error(error.response?.data.error.message || error.message);
     }
-    toast.success("Post Uploaded");
+
     setIsLoading(false);
-    setImage(null);
-    formik.resetForm();
   };
 
   useEffect(() => {

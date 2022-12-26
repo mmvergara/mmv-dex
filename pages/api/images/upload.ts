@@ -11,15 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   return new Promise((resolved, reject) => {
     form.parse(req, async (err, fields, files) => {
       try {
-        //Check method
         if (!allowedMethod(req, "PUT")) throw newError("Method not allowed", 405);
+        if (err) throw newError("Error parsing request", 500);
 
         //Check auth
         const { data: user } = await supabase.auth.getSession();
         if (!user.session) {
           throw newError("Unauthorized / Session expired, try logging in again.", 401);
         }
-        if (err) throw newError("Error parsing request", 500);
 
         // Compression (Options)
         type postFormDataFields = { compressed: string; description: string; title: string };
