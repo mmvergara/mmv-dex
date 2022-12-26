@@ -2,20 +2,26 @@ import { useFormik } from "formik";
 import { postValidationSchema } from "../../schemas/FormSchemas";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import Router, { useRouter } from "next/router";
+import axios from "axios";
 
 const CreatePost: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
+  const [isCompressed, setIsCompressed] = useState<boolean>(false);
+  const [uploadServer, setUploadServer] = useState<"supabase" | "vercel">("supabase");
 
-  const submitPostHandler = () => {
+  const submitPostHandler = async () => {
     if (!image) return;
     const formData = new FormData();
     formData.append("title", formik.values.title);
     formData.append("description", formik.values.description);
-    formData.append("imageUrl", image);
+    formData.append("image", image);
+    formData.append("compressed", String(isCompressed));
+
+    const res = await axios.put("/api/images/upload", formData);
+    console.log(res);
   };
-  // create a preview as a side effect, whenever selected file is changed
+
   useEffect(() => {
     if (!image) {
       setImgUrlPreview(null);
@@ -23,6 +29,7 @@ const CreatePost: React.FC = () => {
     }
     const objectUrl = URL.createObjectURL(image);
     setImgUrlPreview(objectUrl);
+
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [image]);
@@ -38,10 +45,14 @@ const CreatePost: React.FC = () => {
 
   const postImageInputRef = useRef<HTMLInputElement>(null!);
   const clickUploadHandler = () => postImageInputRef.current.click();
+
   const titleError = formik.touched.title && formik.errors.title;
   const descriptionError = formik.touched.description && formik.errors.description;
   return (
-    <form className='flex flex-col mt-8 justify-center items-center max-w-[340px] mx-auto bg-gray- p-4'>
+    <form
+      className='flex flex-col mt-8 justify-center items-center max-w-[340px] mx-auto bg-gray- p-4'
+      onSubmit={formik.handleSubmit}
+    >
       <h2 className='text-5xl mb-4 font-Poppins'>New Post</h2>
       {titleError && <p className='text-left pl-2 w-[100%] text-red-600'>{titleError}</p>}
       <input
@@ -79,6 +90,7 @@ const CreatePost: React.FC = () => {
         ref={postImageInputRef}
         hidden
       />
+
       <button type='button' onClick={clickUploadHandler} className='formButton mb-4'>
         Upload Post Image *
       </button>
@@ -89,6 +101,40 @@ const CreatePost: React.FC = () => {
           </div>
         </>
       )}
+      <div className=' font-Poppins min-w-[200px] border-2 p-4 mb-4'>
+        <input
+          type='checkbox'
+          name='Upload Compressed'
+          id='compressed'
+          defaultChecked={isCompressed}
+          onChange={() => setIsCompressed((ps) => !ps)}
+        />{" "}
+        Compress Image
+        <br />
+        <div>
+          <input
+            type='radio'
+            name='server'
+            value='supabase'
+            checked={"supabase" === uploadServer}
+            onChange={(e) => {
+              if (e.target.value === "supabase") setUploadServer("supabase");
+            }}
+          />{" "}
+          Supabase Server
+          <br />
+          <input
+            type='radio'
+            name='server'
+            value='vercel'
+            checked={"vercel" === uploadServer}
+            onChange={(e) => {
+              if (e.target.value === "vercel") setUploadServer("vercel");
+            }}
+          />{" "}
+          Vercel Server
+        </div>
+      </div>
       <button type='submit' className='formButton'>
         Submit Post
       </button>

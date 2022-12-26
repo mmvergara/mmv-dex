@@ -3,4 +3,7 @@ export interface authCredentials {
   password: string;
 }
 
-export interface createPostInfo {}
+export interface createPostInfo {
+  title: string;
+  description: string;
+}

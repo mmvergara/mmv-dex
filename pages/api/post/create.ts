@@ -4,9 +4,10 @@ import { authValidationSchema } from "../../../schemas/FormSchemas";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import validator from "../../../utils/yup-validator";
 import allowedMethod from "../../../utils/check-method";
+import { DatabaseTypes } from "../../../types/db/db-types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const supabase = createServerSupabaseClient({ req, res });
+  const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
   if (!allowedMethod(req, "PUT")) {
     return res.status(405).send({ message: "Method not allowed" });
   }
