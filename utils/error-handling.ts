@@ -18,6 +18,5 @@ export const newError = (errorMessage: string, errorCode: number) => {
 export const axiosErrorParse = (err: unknown) => {
   const error = err as AxiosError<{ data: null; error: { message: string } }>;
   const message = error.response?.data.error.message || error.message;
-  console.log({ data: null, error: { message } });
   return { data: null, error: { message } };
 };

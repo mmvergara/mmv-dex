@@ -8,8 +8,6 @@ export default async function validation<T = Record<string, any>>(
     await scheme.validate(data, { abortEarly: false });
     return { isValid: true, errors: null };
   } catch (error: any) {
-    console.log("ERROR VALIDATION SERVER SIDE");
-    console.log(error);
     const { errors } = error;
     return { isValid: false, errors };
   }

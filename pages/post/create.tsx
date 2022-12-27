@@ -1,13 +1,16 @@
-import { useFormik } from "formik";
-import { postValidationSchema } from "../../schemas/FormSchemas";
 import { useRef, useState, useEffect } from "react";
+import { postValidationSchema } from "../../schemas/FormSchemas";
+import { axiosErrorParse } from "../../utils/error-handling";
+import { useFormik } from "formik";
 import { GiSnowflake2 } from "react-icons/gi";
 import { toast } from "react-toastify";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import Image from "next/image";
-import { axiosErrorParse } from "../../utils/error-handling";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { DatabaseTypes } from "../../types/db/db-types";
 
 const CreatePost: React.FC = () => {
+  const supabase = useSupabaseClient<DatabaseTypes>();
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
   const [isCompressed, setIsCompressed] = useState<boolean>(true);
@@ -23,10 +26,18 @@ const CreatePost: React.FC = () => {
     formData.append("compressed", String(isCompressed));
     try {
       setIsLoading(true);
-      await axios.put("/api/post/create", formData);
+      if (uploadServer === "supabase") {
+        const { data, error } = await supabase.functions.invoke("createpost", {
+          body: formData,
+        });
+        console.log({data,error})
+      }
+      if (uploadServer === "vercel") {
+        await axios.put("/api/post/create",formData);
+      }
       toast.success("Post Uploaded", { position: "top-left" });
-      formik.resetForm();
-      setImage(null);
+      // formik.resetForm();
+      // setImage(null);
     } catch (e) {
       const { error } = axiosErrorParse(e);
       toast.error(error.message, { position: "top-left" });
