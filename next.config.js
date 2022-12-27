@@ -2,10 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["i.ibb.co", "zquulcqpnkkwckvbxnmr.supabase.co"],
+    domains: ["i.ibb.co", "wujacgzqqczonhruxjan.supabase.co"],
     remotePatterns: [
       { hostname: "i.ibb.co", protocol: "https" },
-      { hostname: "zquulcqpnkkwckvbxnmr.supabase.co", protocol: "https" },
+      { hostname: "wujacgzqqczonhruxjan.supabase.co", protocol: "https" },
     ],
   },
 };

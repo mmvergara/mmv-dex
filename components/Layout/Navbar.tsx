@@ -19,16 +19,7 @@ const Navbar = () => {
     const { error } = await supabase.auth.signOut();
     let logoutStatus = "Logout successful";
     if (error) logoutStatus = error.message;
-    toast.error(logoutStatus, {
-      position: "top-left",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    toast.error(logoutStatus, { position: "top-left" });
   };
 
   const username = user?.email?.split("@").slice(0, -1).join("");

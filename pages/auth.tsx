@@ -1,9 +1,9 @@
-import { useFormik } from "formik";
 import { authValidationSchema } from "../schemas/FormSchemas";
-import { AuthError } from "@supabase/supabase-js";
+import { axiosErrorParse } from "../utils/error-handling";
+import { useFormik } from "formik";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import Router from "next/router";
 
 const Login: React.FC = () => {
@@ -36,11 +36,10 @@ const Login: React.FC = () => {
         setStatus("Signing up . . ");
         await axios.put(`/api/auth/register`, userData);
       }
-      Router.push("/");
-      Router.reload();
-    } catch (error) {
-      const authError = error as AxiosError<{ error?: AuthError }>;
-      setAuthError(authError.response?.data.error?.message || authError.message);
+      // Router.reload();
+    } catch (err) {
+      const { data, error } = axiosErrorParse(err);
+      setAuthError(error.message);
     }
     setStatus("");
   };

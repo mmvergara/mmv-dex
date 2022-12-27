@@ -1,9 +1,9 @@
-import { postInfo } from "../../types";
 import { useState } from "react";
+import { postDetails } from "../../types";
 import Image from "next/image";
 import Link from "next/link";
 
-const PostCard: React.FC<{ post: postInfo }> = ({ post }: { post: postInfo }) => {
+const PostCard: React.FC<{ post: postDetails }> = ({ post }: { post: postDetails }) => {
   const [isLoading, setLoading] = useState(true);
   const className = (...classes: string[]) => {
     return classes.filter(Boolean).join(" ");
@@ -24,6 +24,7 @@ const PostCard: React.FC<{ post: postInfo }> = ({ post }: { post: postInfo }) =>
         />
       </div>
       <p className='mt-1 text-lg font-medium text-gray-900'>{post.title}</p>
+      <p className=' text-sm font-medium text-gray-900 opacity-60'>@{post.author}</p>
       <h3 className='mt-4 text-sm text-gray-700'>{post.description}</h3>
     </Link>
   );

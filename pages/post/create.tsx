@@ -5,6 +5,7 @@ import { GiSnowflake2 } from "react-icons/gi";
 import { toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 import Image from "next/image";
+import { axiosErrorParse } from "../../utils/error-handling";
 
 const CreatePost: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -12,6 +13,7 @@ const CreatePost: React.FC = () => {
   const [isCompressed, setIsCompressed] = useState<boolean>(true);
   const [uploadServer, setUploadServer] = useState<"supabase" | "vercel">("supabase");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const submitPostHandler = async () => {
     if (!image) return;
     const formData = new FormData();
@@ -22,12 +24,12 @@ const CreatePost: React.FC = () => {
     try {
       setIsLoading(true);
       await axios.put("/api/post/create", formData);
-      toast.success("Post Uploaded");
+      toast.success("Post Uploaded", { position: "top-left" });
       formik.resetForm();
       setImage(null);
     } catch (e) {
-      const error = e as AxiosError<{ error: { message: string } }>;
-      toast.error(error.response?.data.error.message || error.message);
+      const { error } = axiosErrorParse(e);
+      toast.error(error.message, { position: "top-left" });
     }
 
     setIsLoading(false);
@@ -91,7 +93,7 @@ const CreatePost: React.FC = () => {
       <input
         type='file'
         onChange={(e) => {
-          console.log("FIle changed");
+          ("FIle changed");
           if (!e.target.files || e.target.files.length === 0) {
             setImage(null);
             return;

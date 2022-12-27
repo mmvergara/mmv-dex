@@ -4,7 +4,7 @@ import { DatabaseTypes } from "../../../types/db/db-types";
 import formidable, { Formidable } from "formidable";
 import allowedMethod from "../../../utils/check-method";
 import sharp from "sharp";
-import newError from "../../../utils/newError";
+import newError from "../../../utils/new-error";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
   const form = new Formidable({ multiples: true, keepExtensions: true });
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const file = files.image as formidable.File;
         const imgBuffer = await sharp(file.filepath)
-          .toFormat("png", { palette: true })
+          .toFormat("png")
           .png({ quality, compressionLevel })
           .toBuffer();
 
@@ -62,7 +62,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).send({ data: { compressed, title, description }, error: null });
         resolved({});
       } catch (e) {
-        console.log(e);
         const error = e as Error;
         res.status(400).send({ data: null, error: { message: error.message } });
         reject();
