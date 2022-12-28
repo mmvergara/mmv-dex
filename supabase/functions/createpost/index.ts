@@ -5,7 +5,9 @@
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { decode } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
+import { encode } from "https://deno.land/x/imagescript@1.2.15/png/src/png.mjs";
 import { Buffer } from "https://deno.land/std@0.139.0/node/buffer.ts";
+import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,70 +15,82 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
     { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
   );
 
-  const formData = await req.formData();
-  let formFields = {};
-  formData.forEach((value: string, key: string) => {
-    formFields = { ...formFields, [key]: value };
-  });
-
-  let imageFile = formFields.image;
-  let imageBuffer = await imageFile.arrayBuffer();
-  let compressionLevel = 0;
-  if (formFields.compressed === "true") {
-    compressionLevel = 3;
-  }
-
   try {
-  const imgScriptData = await decode(imageBuffer);
-  console.log({compressionLevel})
-  const encodedImg = await imgScriptData.encode(compressionLevel);
-    console.log(encodedImg);
-    imageBuffer = new Buffer(imageBuffer);
-    console.log({ imageBuffer });
-  } catch (error) {
-    console.log({ error });
-  }
-  let imageType = formFields.image.type.split("/").pop();
-  let imageName = Math.random().toString() + "." + imageType;
-  let data = null;
-  let error = null;
+    // Check auth and get userId
+    const {
+      data: { user },
+    } = await supabaseClient.auth.getUser();
+    if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
+    const userId = user?.id;
 
-  const { data: upload, error: uploadError } = await supabaseClient.storage
-    .from("post-images")
-    .upload(formFields.compressed + imageName, imageBuffer, {
-      contentType: "image/png",
-      cacheControl: "3600",
-      upsert: false,
+    // Parse Form Data
+    const formData = await req.formData();
+    let formFields = {};
+    formData.forEach((value: string, key: string) => {
+      formFields = { ...formFields, [key]: value };
     });
-  error = uploadError;
-  data = upload;
-  try {
-    console.log({ data, error });
-    return new Response(JSON.stringify({ data, error }), {
+    const { compressed, image, description, title, compressionMethod } = formFields;
+
+    let imageBuffer = await image.arrayBuffer();
+
+    // Compression Options
+    let compressionLevel = 1;
+    const img_is_compressed = compressed === "true";
+    const compressionInSever = compressionMethod === "server";
+    if (img_is_compressed && compressionInSever) compressionLevel = 9;
+
+    // Process Image
+    const { bitmap, width, height } = await decode(imageBuffer);
+    const encodedImg = await encode(bitmap, {
+      width,
+      height,
+      channels: 4,
+      level: compressionLevel,
+    });
+    imageBuffer = new Buffer(encodedImg);
+
+    // Upload Image to storage bucket
+    let imageName = `supabase-${compressionMethod}compressed=${compressed}-${v4.generate()}.png`;
+    const { data: imgData, error: imgError } = await supabaseClient.storage
+      .from("post-images")
+      .upload(imageName, imageBuffer, {
+        upsert: false,
+        contentType: "image/png",
+      });
+    if (imgError) throw new Error("Error upload image");
+
+    // Get Image Public Url
+    const { data: imgPublicUrl } = supabaseClient.storage
+      .from("post-images")
+      .getPublicUrl(imgData?.path!);
+
+    // Insert Post
+    const { error } = await supabaseClient.from("posts").insert({
+      author: userId,
+      description,
+      title,
+      img_is_compressed,
+      image_url: imgPublicUrl.publicUrl,
+    });
+    if (error) throw new Error(error.message || "Error submitting post");
+
+    return new Response(JSON.stringify({ data: null, error: null }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
     console.log({ error });
-    return new Response(JSON.stringify({ data: null, error: error.message }), {
+    return new Response(JSON.stringify({ data: null, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });
   }
 });
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/browser-with-cors' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
