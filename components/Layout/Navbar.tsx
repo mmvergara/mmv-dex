@@ -1,4 +1,3 @@
-"use client";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { RiLoginCircleFill } from "react-icons/ri";

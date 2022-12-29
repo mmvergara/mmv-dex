@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!allowedMethod(req, "GET")) throw newError("Method not allowed", 405);
 
     const { data, error } = await supabase.from("posts").select("*, profiles(id,email)");
+    console.log({error})
     if (error) throw newError("Error fetching posts", 500);
 
     // If there are no error, record api_call details to supabase

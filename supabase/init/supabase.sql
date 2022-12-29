@@ -1,29 +1,27 @@
--- Create a table for public profiles
+-- go to  Authentication > Providers > Email > Disable Confirm Email
+
+
+
+-- PROFILES TABLE
 create table profiles (
   id uuid references auth.users on delete cascade not null primary key,
-  email text unique not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  inserted_at timestamp with time zone default timezone('utc'::text, now()) not null,
-
-  constraint username_length check (char_length(email) >= 23)
+  email varchar unique not null,
+  role varchar not null,
+  inserted_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
--- @dexlocalhost.com.length = 17 
--- 17 + 6 == 23
 
 
--- Set up Row Level Security (RLS)
 alter table profiles
   enable row level security;
 
-create policy "Public profiles are viewable by everyone." on profiles
+CREATE POLICY "Admin users can do CRUD on profiles" ON "public"."profiles"
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (is_admin(auth.uid()))
+WITH CHECK (is_admin(auth.uid()));
+
+create policy "Enable read access for all users on profiles." on "public"."profiles"
   for select using (true);
-
-create policy "Users can insert their own profile." on profiles
-  for insert with check (auth.uid() = id);
-
-create policy "Users can update own profile." on profiles
-  for update using (auth.uid() = id);
-
 
 -- This trigger automatically creates a profile entry when a new user signs up via Supabase Auth.
 create function public.handle_new_user()
@@ -37,13 +35,19 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+  
+-- PROFILES TABLE
 
-------------
 
--- create posts table
+
+
+
+
+
+-- POST TABLE
 create table posts (
   id bigint generated always as identity primary key,
-  author uuid references profiles.id on delete cascade not null,
+  author uuid references public.profiles on delete cascade not null,
   title text not null,
   description text not null,
   image_url text not null,
@@ -51,57 +55,123 @@ create table posts (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
-  CONSTRAINT titlechk CHECK (char_length(title) >= 6),
-  CONSTRAINT descriptionchk CHECK (char_length(description) >= 6)
+  CONSTRAINT title_min_length CHECK (char_length(title) >= 6),
+  CONSTRAINT title_max_length CHECK (char_length(title) <= 50),
+
+  CONSTRAINT description_min_length CHECK (char_length(description) >= 6),
+  CONSTRAINT description_max_length CHECK (char_length(description) <= 500)
+
 );
+
+
+
 
 -- Set up row level security on posts table
 alter table posts
   enable row level security;
 
-CREATE POLICY "posts are public" ON "public"."posts"
+CREATE POLICY "Admin users can do CRUD on posts" ON "public"."posts"
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (is_admin(auth.uid()))
+WITH CHECK (is_admin(auth.uid()));
+
+CREATE POLICY "Enable create post for authenticated users only on posts" ON "public"."posts"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Enable read access for all users on posts" ON "public"."posts"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true);
 
-CREATE POLICY "authenticated users can create post" ON "public"."posts"
-AS PERMISSIVE FOR INSERT
+CREATE POLICY "Enable users to do CRUD on post that they own on posts" ON "public"."posts"
+AS PERMISSIVE FOR ALL
 TO public
-WITH CHECK (auth.uid() is not null);
-
-CREATE POLICY "users can only delete posts that they own" ON "public"."posts"
-AS PERMISSIVE FOR DELETE
-TO public
-USING (auth.uid() = author);
-
--- create posts-images bucket
-insert into storage.buckets (id, name)
-  values ('avatars', 'avatars');
-INSERT INTO storage.buckets (id,name) values ("post-images","post-images");
-CREATE POLICY "enable all users to see post-images" ON storage.objects FOR SELECT TO public USING (true);
-CREATE POLICY "only authenticated users can upload images 1hys5dx_0" ON storage.objects FOR INSERT TO public WITH CHECK ((uid() IS NOT NULL));
+USING ((uid() = author))
+WITH CHECK ((uid() = author));
+-- POST TABLE
 
 
--- go to  Authentication > Providers > Email > Disable Confirm Email
 
 
--- create api_calls_table
+
+-- API_CALLS TABLE
 create table api_calls (
   id bigint generated always as identity primary key,
   api_path text not null,
-  called_by uuid references profiles on delete cascade,
+  called_by uuid references profiles, -- no on delete cascade
   called_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table api_calls
   enable row level security;
 
-CREATE POLICY "Enable insert for anon and authenticated users" ON "public"."api_calls"
+CREATE POLICY "Enable insert for anon and authenticated users on api_calls" ON "public"."api_calls"
 AS PERMISSIVE FOR INSERT
 TO anon, authenticated
 WITH CHECK (true);
 
-CREATE POLICY "Enable read access for all anon and authenticated users" ON "public"."api_calls"
-AS PERMISSIVE FOR SELECT
-TO anon, authenticated
-USING (true);
+CREATE POLICY "Admin users can do CRUD on api_calls" ON "public"."api_calls"
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (is_admin(auth.uid()))
+WITH CHECK (is_admin(auth.uid()));
+
+-- API_CALLS TABLE
+
+
+
+-- PEER_REVIEW TABLE
+CREATE TABLE peer_reviews (
+  id bigint generated always as identity primary key,
+  evaluation jsonb not null,
+  reviewer uuid references profiles on delete cascade not null
+);
+
+alter table peer_reviews
+  enable row level security;
+
+CREATE POLICY "Enable authenticated users to create peer_reviews" ON "public"."peer_reviews"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = reviewer);
+
+CREATE POLICY "Admin users can do CRUD on peer_reviews" ON "public"."peer_reviews"
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (is_admin(auth.uid()))
+WITH CHECK (is_admin(auth.uid()));
+-- PEER_REVIEW TABLE
+
+
+
+
+
+
+
+
+
+-- POST IMAGES BUCKET
+INSERT INTO storage.buckets (id,name) values ('post-images','post-images');
+CREATE POLICY "enable all users to see post-images" ON storage.objects FOR SELECT TO public USING (true);
+CREATE POLICY "Enable insert image for authenticated users only on post-images bucket" ON storage.objects FOR INSERT TO public WITH CHECK ((uid() IS NOT NULL));
+-- POST IMAGES BUCKET
+
+
+
+-- is_admin database function
+create function public.is_admin(user_id uuid) 
+returns boolean
+language plpgsql security definer
+as $$
+begin
+  return exists (select 1 from profiles where profiles.id = user_id and profiles.role = "admin");
+end
+$$;
+
+
+
+
+

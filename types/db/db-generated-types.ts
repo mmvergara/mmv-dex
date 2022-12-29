@@ -29,55 +29,72 @@ export interface Database {
           called_at?: string
         }
       }
+      peer_reviews: {
+        Row: {
+          id: number
+          evaluation: Json
+          reviewer: string
+        }
+        Insert: {
+          id?: never
+          evaluation: Json
+          reviewer: string
+        }
+        Update: {
+          id?: never
+          evaluation?: Json
+          reviewer?: string
+        }
+      }
       posts: {
         Row: {
           id: number
           author: string
           title: string
           description: string
+          image_url: string
           img_is_compressed: boolean
           created_at: string
           updated_at: string
-          image_url: string
         }
         Insert: {
           id?: never
           author: string
           title: string
           description: string
+          image_url: string
           img_is_compressed: boolean
           created_at?: string
           updated_at?: string
-          image_url: string
         }
         Update: {
           id?: never
           author?: string
           title?: string
           description?: string
+          image_url?: string
           img_is_compressed?: boolean
           created_at?: string
           updated_at?: string
-          image_url?: string
         }
       }
       profiles: {
         Row: {
           id: string
           email: string
-          updated_at: string
+          role: string
           inserted_at: string
         }
         Insert: {
           id: string
           email: string
-          updated_at?: string
+          role: string
           inserted_at?: string
         }
         Update: {
           id?: string
           email?: string
-          updated_at?: string
+          role?: string
           inserted_at?: string
         }
       }
@@ -86,7 +103,10 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

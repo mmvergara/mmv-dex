@@ -25,7 +25,7 @@ export async function getAllPosts(context: GetServerSidePropsContext) {
     });
     let error: PostgrestError | null = null;
     const { data: allPosts, error: dbErr } = (await result.json()) as getAllPostApiResponse;
-
+    
     if (dbErr) error = dbErr;
 
     // Create postInfo array
@@ -43,6 +43,7 @@ export async function getAllPosts(context: GetServerSidePropsContext) {
 
     return { data: posts, error };
   } catch (err) {
+    console.log({err})
     return axiosErrorParse(err);
   }
 }

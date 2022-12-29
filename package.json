@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-types": "npx supabase gen types typescript --project-id 'wujacgzqqczonhruxjan' --schema public > types/db/db-generated-types.ts"
+    "generate-types": "npx supabase gen types typescript --project-id 'uihtchzqrnrbhgykntqe' --schema public > types/db/db-generated-types.ts"
   },
   "dependencies": {
     "@chakra-ui/modal": "^2.2.5",
