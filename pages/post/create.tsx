@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { postValidationSchema } from "../../schemas/FormSchemas";
+import { postValidationSchema } from "../../schemas/yup-schemas";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { DatabaseTypes } from "../../types/db/db-types";
@@ -16,37 +16,44 @@ const CreatePost: React.FC = () => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { uploadSettings, UploadSettingsUI } = useUploadSettings();
   const { compressionMethod, isCompressed, uploadServer } = uploadSettings;
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const submitPostHandler = async () => {
+    setIsLoading(true);
     if (!image) return;
     let imgFile = image;
-    if (compressionMethod === "client") {
-      imgFile = await imageCompression(image, { maxSizeMB: 5 });
+
+    // Compress client side
+    try {
+      if (compressionMethod === "client") {
+        console.log("comress client");
+        imgFile = await imageCompression(image, { maxSizeMB: 5 });
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Error compressing image on client side", {
+        position: "top-left",
+      });
+      setIsLoading(false);
+      return;
     }
-    console.log({ imgFile });
+
     const formData = new FormData();
     formData.append("title", formik.values.title);
     formData.append("description", formik.values.description);
     formData.append("image", imgFile);
     formData.append("compressed", String(isCompressed));
     formData.append("compressionMethod", compressionMethod);
-    console.log({ uploadServer, isCompressed, compressionMethod });
-
+    console.log(formData.getAll("image"));
     try {
-      setIsLoading(true);
       if (uploadServer === "supabase") {
-        const { data, error } = await supabase.functions.invoke("createpost", {
-          body: formData,
-        });
-        console.log({ data, error });
+        const { error } = await supabase.functions.invoke("createpost", { body: formData });
+        if (error) throw new Error(error.message);
       }
-      if (uploadServer === "vercel") {
-        await axios.put("/api/post/create", formData);
-      }
+
+      if (uploadServer === "vercel") await axios.put("/api/post/create", formData);
+
       toast.success("Post Uploaded", { position: "top-left" });
       // formik.resetForm();
       // setImage(null);
@@ -63,6 +70,7 @@ const CreatePost: React.FC = () => {
       setImgUrlPreview(null);
       return;
     }
+
     const objectUrl = URL.createObjectURL(image);
     setImgUrlPreview(objectUrl);
 

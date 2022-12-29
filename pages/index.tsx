@@ -1,21 +1,31 @@
-import axios, { AxiosResponse } from "axios";
+import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+import { dbPostDetails, postDetails } from "../types";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { GetServerSidePropsContext } from "next";
 import { axiosErrorParse } from "../utils/error-handling";
+import { DatabaseTypes } from "../types/db/db-types";
 import { useEffect } from "react";
-import { PostgrestError } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import PostCard from "../components/post/PostCard";
-import { dbPostDetails, postDetails } from "../types";
+import { getAccessAndRefreshTokenAsCookie } from "../utils/auth-cookies";
 
-export async function getAllPosts() {
+export async function getAllPosts(context: GetServerSidePropsContext) {
+  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
+  const host = context.req.headers.referer;
+
+  // Check auth and set accessToken and refreshToken Cookies
+  const cookie = await getAccessAndRefreshTokenAsCookie(supabase);
+
   try {
     // Fetch posts
     type getAllPostApiResponse = { data: dbPostDetails[] | null; error: PostgrestError | null };
-    const result = (await axios.get(
-      "http:localhost:3000/api/post/all"
-    )) as AxiosResponse<getAllPostApiResponse>;
+    const result = await fetch(`${host}/api/post/all`, {
+      headers: { cookie: cookie || "" },
+    });
     let error: PostgrestError | null = null;
-    const { data: allPosts, error: dbErr } = result.data;
+    const { data: allPosts, error: dbErr } = (await result.json()) as getAllPostApiResponse;
+
     if (dbErr) error = dbErr;
 
     // Create postInfo array
@@ -37,8 +47,9 @@ export async function getAllPosts() {
   }
 }
 
-export async function getServerSideProps() {
-  const { data, error } = await getAllPosts();
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { data, error } = await getAllPosts(context);
+
   return {
     props: {
       posts: data || [],
@@ -47,12 +58,10 @@ export async function getServerSideProps() {
   };
 }
 
-type HomeProps = { posts: postDetails[]; error: PostgrestError | null };
+type HomeProps = { posts: postDetails[]; error: PostgrestError | null | { message: string } };
 export default function Home({ posts, error }: HomeProps) {
   useEffect(() => {
-    if (error) {
-      toast.error(error.message);
-    }
+    if (error) toast.error(error.message);
   }, []);
 
   return (

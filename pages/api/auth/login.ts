@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { authCredentials } from "../../../types/api/auth-types";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { authValidationSchema } from "../../../schemas/FormSchemas";
+import { authValidationSchema } from "../../../schemas/yup-schemas";
 import { DatabaseTypes } from "../../../types/db/db-types";
 import validator from "../../../utils/yup-validator";
 import allowedMethod from "../../../utils/check-method";
 import { apiError, newError } from "../../../utils/error-handling";
+import { recordNextJsApiCall } from "../../../utils/record-api-call";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
@@ -24,12 +25,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isValid) throw newError("Invalid inputs", 422);
 
     // Sign in
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
       email: emailifiedUsername,
       password,
     });
     if (error) throw newError(error.message, 400);
-    res.status(200).send({ data, error });
+
+    // If there are no error, record api_call details to supabase
+    await recordNextJsApiCall(req, supabase, user?.id);
+    res.status(200).send({ data: null, error: null });
   } catch (e) {
     const { errData, code } = apiError(e);
     res.status(code).send(errData);

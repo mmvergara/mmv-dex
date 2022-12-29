@@ -1,4 +1,4 @@
-import { authValidationSchema } from "../schemas/FormSchemas";
+import { authValidationSchema } from "../schemas/yup-schemas";
 import { axiosErrorParse } from "../utils/error-handling";
 import { useFormik } from "formik";
 import { useUser } from "@supabase/auth-helpers-react";

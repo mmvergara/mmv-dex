@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { compressionMethod, uploadServer } from "../types";
 
 const useUploadSettings = () => {
   const [isCompressed, setIsCompressed] = useState<boolean>(true);
-  const [compressionMethod, setCompressionMethod] = useState<"server" | "client">("client");
-  const [uploadServer, setUploadServer] = useState<"supabase" | "vercel">("supabase");
+  const [compressionMethod, setCompressionMethod] = useState<compressionMethod>("client");
+  const [uploadServer, setUploadServer] = useState<uploadServer>("supabase");
 
   const uploadSettings = {
     isCompressed,

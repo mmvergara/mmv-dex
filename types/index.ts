@@ -9,3 +9,6 @@ export interface postDetails {
 }
 
 export type dbPostDetails = posts & { profiles: profiles };
+
+export type compressionMethod = "server" | "client"
+export type uploadServer = "supabase" | "vercel"

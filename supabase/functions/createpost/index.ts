@@ -38,8 +38,8 @@ serve(async (req) => {
     });
     const { compressed, image, description, title, compressionMethod } = formFields;
 
+    // Validate Form Data
     let imageBuffer = await image.arrayBuffer();
-
     // Compression Options
     let compressionLevel = 1;
     const img_is_compressed = compressed === "true";
@@ -87,7 +87,6 @@ serve(async (req) => {
     });
   } catch (err) {
     const error = err as Error;
-    console.log({ error });
     return new Response(JSON.stringify({ data: null, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

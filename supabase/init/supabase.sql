@@ -83,3 +83,25 @@ CREATE POLICY "only authenticated users can upload images 1hys5dx_0" ON storage.
 
 
 -- go to  Authentication > Providers > Email > Disable Confirm Email
+
+
+-- create api_calls_table
+create table api_calls (
+  id bigint generated always as identity primary key,
+  api_path text not null,
+  called_by uuid references profiles on delete cascade,
+  called_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table api_calls
+  enable row level security;
+
+CREATE POLICY "Enable insert for anon and authenticated users" ON "public"."api_calls"
+AS PERMISSIVE FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Enable read access for all anon and authenticated users" ON "public"."api_calls"
+AS PERMISSIVE FOR SELECT
+TO anon, authenticated
+USING (true);
