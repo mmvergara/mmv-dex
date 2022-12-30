@@ -2,6 +2,7 @@ import { useState } from "react";
 import { postDetails } from "../../types";
 import Image from "next/image";
 import Link from "next/link";
+import { emailToUsername } from "../../utils/parsers";
 
 const PostCard: React.FC<{ post: postDetails }> = ({ post }: { post: postDetails }) => {
   const [isLoading, setLoading] = useState(true);
@@ -9,10 +10,13 @@ const PostCard: React.FC<{ post: postDetails }> = ({ post }: { post: postDetails
     return classes.filter(Boolean).join(" ");
   };
   return (
-    <Link href={post.id + ""} className=' hover:drop-shadow-2xl transition-all ease-in rounded-xl'>
+    <Link
+      href={`post/${post.id}`}
+      className=' hover:drop-shadow-2xl transition-all ease-in rounded-xl'
+    >
       <div className='aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-7'>
         <Image
-          alt=''
+          alt={`${post.title || ""} preview image`}
           src={post.image_url}
           fill
           sizes='300px'
@@ -24,7 +28,9 @@ const PostCard: React.FC<{ post: postDetails }> = ({ post }: { post: postDetails
         />
       </div>
       <p className='mt-1 text-lg font-medium text-gray-900'>{post.title}</p>
-      <p className=' text-sm font-medium text-gray-900 opacity-60'>@{post.author}</p>
+      <p className=' text-sm font-medium text-gray-900 opacity-60'>
+        @{emailToUsername(post.profiles.email)}
+      </p>
       <h3 className='mt-4 text-sm text-gray-700'>{post.description}</h3>
     </Link>
   );

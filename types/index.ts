@@ -2,11 +2,19 @@ import { posts, profiles } from "./db/db-types";
 
 export interface postDetails {
   id: number;
+  author: string;
   title: string;
   description: string;
   image_url: string;
-  author: string;
+  img_is_compressed: boolean;
+  created_at: string;
+  updated_at: string;
+  profiles: {
+    id: string;
+    email: string;
+  };
 }
+
 export interface evaluationRequiredRatingScores {
   score: number;
   comment: string;
@@ -45,6 +53,5 @@ export interface evaluationNotParsed {
 }
 
 export type dbPostDetails = posts & { profiles: profiles };
-
 export type compressionMethod = "server" | "client";
 export type uploadServer = "supabase" | "vercel";

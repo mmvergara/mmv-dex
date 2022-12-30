@@ -1,56 +1,17 @@
-import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import { dbPostDetails, postDetails } from "../types";
+import { PostgrestError } from "@supabase/supabase-js";
+import { postDetails } from "../types";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
-import { axiosErrorParse } from "../utils/error-handling";
 import { DatabaseTypes } from "../types/db/db-types";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import Head from "next/head";
 import PostCard from "../components/post/PostCard";
-import { getAccessAndRefreshTokenAsCookie } from "../utils/auth-cookies";
-
-export async function getAllPosts(context: GetServerSidePropsContext) {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
-  const host = context.req.headers.referer;
-
-  // Check auth and set accessToken and refreshToken Cookies
-  const cookie = await getAccessAndRefreshTokenAsCookie(supabase);
-
-  try {
-    // Fetch posts
-    type getAllPostApiResponse = { data: dbPostDetails[] | null; error: PostgrestError | null };
-    const result = await fetch(`${host}/api/post/all`, {
-      headers: { cookie: cookie || "" },
-    });
-    let error: PostgrestError | null = null;
-    const { data: allPosts, error: dbErr } = (await result.json()) as getAllPostApiResponse;
-    
-    if (dbErr) error = dbErr;
-
-    // Create postInfo array
-    let posts: postDetails[] = [];
-    if (allPosts && allPosts?.length > 0)
-      posts = allPosts.map((p) => {
-        return {
-          id: p.id,
-          title: p.title,
-          description: p.description,
-          image_url: p.image_url,
-          author: p.profiles.email.split("@").slice(0, -1).join(""),
-        };
-      });
-
-    return { data: posts, error };
-  } catch (err) {
-    console.log({err})
-    return axiosErrorParse(err);
-  }
-}
+import Head from "next/head";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { data, error } = await getAllPosts(context);
-
+  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
+  const { data, error } = await supabase.from("posts").select("*, profiles(id,email)");
+  console.log(data)
   return {
     props: {
       posts: data || [],

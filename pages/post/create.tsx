@@ -28,7 +28,6 @@ const CreatePost: React.FC = () => {
     // Compress client side
     try {
       if (compressionMethod === "client") {
-        console.log("comress client");
         imgFile = await imageCompression(image, { maxSizeMB: 5 });
       }
     } catch (error: any) {
@@ -45,7 +44,6 @@ const CreatePost: React.FC = () => {
     formData.append("image", imgFile);
     formData.append("compressed", String(isCompressed));
     formData.append("compressionMethod", compressionMethod);
-    console.log(formData.getAll("image"));
     try {
       if (uploadServer === "supabase") {
         const { error } = await supabase.functions.invoke("createpost", { body: formData });

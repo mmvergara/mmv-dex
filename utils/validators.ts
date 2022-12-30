@@ -24,8 +24,6 @@ export const formidableFileValidation = (file: formidable.File, allowedFileTypes
   // Check file type
   if (file.mimetype) {
     const mimetype = file.mimetype;
-    console.log(mimetype.split("/").pop())
-    console.log(allowedFileTypes)
     if (!allowedFileTypes.some((fileType) => fileType === mimetype.split("/").pop())) {
       message += "Invalid file type";
     }

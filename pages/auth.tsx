@@ -36,7 +36,7 @@ const Login: React.FC = () => {
         setStatus("Signing up . . ");
         await axios.put(`/api/auth/register`, userData);
       }
-      // Router.reload();
+      Router.reload();
     } catch (err) {
       const { data, error } = axiosErrorParse(err);
       setAuthError(error.message);

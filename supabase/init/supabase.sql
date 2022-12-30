@@ -27,8 +27,8 @@ create policy "Enable read access for all users on profiles." on "public"."profi
 create function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email)
-  values (new.id, new.email);
+  insert into public.profiles (id, email, role)
+  values (new.id, new.email,'user');
   return new;
 end;
 $$ language plpgsql security definer;
@@ -37,10 +37,6 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
   
 -- PROFILES TABLE
-
-
-
-
 
 
 
@@ -94,14 +90,11 @@ WITH CHECK ((uid() = author));
 -- POST TABLE
 
 
-
-
-
 -- API_CALLS TABLE
 create table api_calls (
   id bigint generated always as identity primary key,
   api_path text not null,
-  called_by uuid references profiles, -- no on delete cascade
+  called_by uuid references profiles on delete cascade, -- no on delete cascade
   called_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -154,8 +147,7 @@ WITH CHECK (is_admin(auth.uid()));
 
 
 -- POST IMAGES BUCKET
-INSERT INTO storage.buckets (id,name) values ('post-images','post-images');
-CREATE POLICY "enable all users to see post-images" ON storage.objects FOR SELECT TO public USING (true);
+INSERT INTO storage.buckets (id,name,public) values ('post-images','post-images','true');
 CREATE POLICY "Enable insert image for authenticated users only on post-images bucket" ON storage.objects FOR INSERT TO public WITH CHECK ((uid() IS NOT NULL));
 -- POST IMAGES BUCKET
 

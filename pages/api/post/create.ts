@@ -44,11 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Validate title and description
         let { isValid } = await validation(postValidationSchema, { title, description });
         if (!isValid) throw newError("Invalid request", 403);
-        console.log("Validtion 2");
 
         // Validate image file
-        console.log('File RECEIVED')
-        console.log({file:img})
         const { error: fileValidationError } = formidableFileValidation(img, [
           "png",
           "jpg",
@@ -103,7 +100,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).send({ data: { compressed, title, description }, error: null });
         resolved(null);
       } catch (e) {
-        console.log(e);
         const { code, errData } = apiError(e);
         res.status(code || 500).send(errData);
         reject(null);
