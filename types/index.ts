@@ -1,19 +1,6 @@
-import { posts, profiles } from "./db/db-types";
-
-export interface postDetails {
-  id: number;
-  author: string;
-  title: string;
-  description: string;
-  image_url: string;
-  img_is_compressed: boolean;
-  created_at: string;
-  updated_at: string;
-  profiles: {
-    id: string;
-    email: string;
-  };
-}
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { GetServerSidePropsContext } from "next";
+import { DatabaseTypes, posts, profiles } from "./db/db-types";
 
 export interface evaluationRequiredRatingScores {
   score: number;

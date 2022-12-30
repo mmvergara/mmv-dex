@@ -3,39 +3,33 @@ import { postValidationSchema } from "../../schemas/yup-schemas";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { DatabaseTypes } from "../../types/db/db-types";
-import { GiSnowflake2 } from "react-icons/gi";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-
-import axios from "axios";
-import Image from "next/image";
+import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
 import useUploadSettings from "../../utils/useUploadSettings";
 import imageCompression from "browser-image-compression";
+import Image from "next/image";
+import axios from "axios";
 
 const CreatePost: React.FC = () => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const [image, setImage] = useState<File | null>(null);
   const [imgPreviewUrl, setImgUrlPreview] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const { uploadSettings, UploadSettingsUI } = useUploadSettings();
   const { compressionMethod, isCompressed, uploadServer } = uploadSettings;
 
   const submitPostHandler = async () => {
     setIsLoading(true);
-    if (!image) return;
+    if (!image) return toast.error("Please provide an image.");
     let imgFile = image;
 
     // Compress client side
     try {
-      if (compressionMethod === "client") {
-        imgFile = await imageCompression(image, { maxSizeMB: 5 });
-      }
+      if (compressionMethod === "client") imgFile = await imageCompression(image, { maxSizeMB: 5 });
     } catch (error: any) {
-      toast.error(error.message || "Error compressing image on client side", {
-        position: "top-left",
-      });
-      setIsLoading(false);
-      return;
+      toast.error(error.message || "Error compressing image on client side");
+      return setIsLoading(false);
     }
 
     const formData = new FormData();
@@ -44,23 +38,24 @@ const CreatePost: React.FC = () => {
     formData.append("image", imgFile);
     formData.append("compressed", String(isCompressed));
     formData.append("compressionMethod", compressionMethod);
+
+    // Upload post to supabase or vercel server
     try {
       if (uploadServer === "supabase") {
         const { error } = await supabase.functions.invoke("createpost", { body: formData });
         if (error) throw new Error(error.message);
       }
-
       if (uploadServer === "vercel") await axios.put("/api/post/create", formData);
-
-      toast.success("Post Uploaded", { position: "top-left" });
-      // formik.resetForm();
-      // setImage(null);
     } catch (e) {
+      // Axios Error Parse also works on normal throw new Error()
       const { error } = axiosErrorParse(e);
-      toast.error(error.message, { position: "top-left" });
+      toast.error(error.message);
+    } finally {
+      setImage(null);
+      setIsLoading(false);
+      formik.resetForm();
+      toast.success("Post Uploaded");
     }
-
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -68,10 +63,8 @@ const CreatePost: React.FC = () => {
       setImgUrlPreview(null);
       return;
     }
-
     const objectUrl = URL.createObjectURL(image);
     setImgUrlPreview(objectUrl);
-
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [image]);
@@ -85,11 +78,11 @@ const CreatePost: React.FC = () => {
     onSubmit: submitPostHandler,
   });
 
-  const postImageInputRef = useRef<HTMLInputElement>(null!);
   const clickUploadHandler = () => postImageInputRef.current.click();
-
+  const postImageInputRef = useRef<HTMLInputElement>(null!);
   const titleError = formik.touched.title && formik.errors.title;
   const descriptionError = formik.touched.description && formik.errors.description;
+
   return (
     <form
       className='flex flex-col mt-8 justify-center items-center max-w-[340px] mx-auto bg-gray- p-4'
@@ -107,9 +100,7 @@ const CreatePost: React.FC = () => {
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
       />
-      {descriptionError && (
-        <p className='text-left pl-2 w-[100%] text-red-600'>{descriptionError}</p>
-      )}
+      {descriptionError && <p className='text-left pl-2 w-[100%] text-red-600'>{descriptionError}</p>}
       <textarea
         name='description'
         id='description'
@@ -147,11 +138,7 @@ const CreatePost: React.FC = () => {
 
       <button type='submit' className='formButton flex items-center justify-center gap-2'>
         Submit Post
-        {isLoading && (
-          <span className='spin'>
-            <GiSnowflake2 />
-          </span>
-        )}
+        {SnowFlakeLoading}
       </button>
     </form>
   );

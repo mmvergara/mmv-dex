@@ -10,12 +10,20 @@ const App = ({ Component, pageProps }: AppProps) => {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   return (
-    <SessionContextProvider
-      supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
-    >
+    <SessionContextProvider supabaseClient={supabaseClient} initialSession={pageProps.initialSession}>
       <Navbar />
-      <ToastContainer />
+      <ToastContainer
+        position='top-left'
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
       <Component {...pageProps} />
     </SessionContextProvider>
   );

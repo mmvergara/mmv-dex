@@ -1,27 +1,32 @@
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
+import { emailToUsername } from "../../utils/parsers";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
 import { GrClose } from "react-icons/gr";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 const Navbar = () => {
-  const supabase = useSupabaseClient();
-  const user = useUser();
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const supabase = useSupabaseClient();
+  const router = useRouter();
+  const user = useUser();
+
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
   const handleClose = () => setDrawerOpen((prev) => !prev);
+
   const logoutHandler = async () => {
     const { error } = await supabase.auth.signOut();
-    let logoutStatus = "Logout successful";
-    if (error) logoutStatus = error.message;
-    toast.error(logoutStatus, { position: "top-left" });
+    if (error) toast.error(error.message);
+    if (!error) toast.success("Logout Success");
+    router.push("/auth");
   };
 
-  const username = user?.email?.split("@").slice(0, -1).join("");
+  const username = emailToUsername(user?.email);
 
   return (
     <nav className='text-sm font-semibold font-Poppins text-black tracking-wide bg-gray-100 py-2 shadow-lg px-6  flex  justify-between items-center'>
@@ -48,7 +53,6 @@ const Navbar = () => {
           </Link>
         )}
       </span>
-
       <Drawer isOpen={drawerOpen} placement='right' size='sm' onClose={handleClose}>
         <DrawerOverlay onClick={toggleDrawer} />
         <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
@@ -61,7 +65,7 @@ const Navbar = () => {
           <DrawerBody>
             {user && (
               <ul onClick={toggleDrawer} className='flex flex-col font-Poppins font-semibold'>
-                <Link href='/post/create' className='navLink py-4 '>
+                <Link href={`/profile/${username}`} className='navLink py-4 '>
                   My Profile
                 </Link>
                 <Link href='/post/create' className='navLink py-4 '>

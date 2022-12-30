@@ -1,19 +1,24 @@
 import { authValidationSchema } from "../schemas/yup-schemas";
 import { axiosErrorParse } from "../utils/error-handling";
 import { useFormik } from "formik";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import axios from "axios";
 import Router from "next/router";
+import { usernameToEmail } from "../utils/parsers";
+import { AuthError, AuthResponse } from "@supabase/supabase-js";
+import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
+import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
+  const supabase = useSupabaseClient();
   const user = useUser();
   if (user) {
     Router.push("/");
     return <></>;
   }
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
-  const [status, setStatus] = useState<null | string>(null);
+  const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
 
   const toggleFormState = () =>
@@ -23,25 +28,23 @@ const Login: React.FC = () => {
     });
 
   const authHandler = async () => {
-    const username = formik.values.username;
+    setIsLoading(true);
+
+    const email = usernameToEmail(formik.values.username);
     const password = formik.values.password;
-    const userData = { username, password };
-    setAuthError("");
-    try {
-      if (formState == "Login") {
-        setStatus("Logging In . . .");
-        await axios.post(`/api/auth/login`, userData);
-      }
-      if (formState === "Signup") {
-        setStatus("Signing up . . ");
-        await axios.put(`/api/auth/register`, userData);
-      }
-      Router.reload();
-    } catch (err) {
-      const { data, error } = axiosErrorParse(err);
-      setAuthError(error.message);
-    }
-    setStatus("");
+    const userData = { email, password };
+
+    let error: AuthError | null = null;
+    let response: AuthResponse | null = null;
+
+    if (formState == "Login") response = await supabase.auth.signInWithPassword(userData);
+    if (formState === "Signup") response = await supabase.auth.signUp(userData);
+    if (response) error = response.error || null;
+
+    if (error) setAuthError(error?.message || "Error Occured");
+    if (!error) toast.success("Authenticated");
+
+    setIsLoading(false);
   };
 
   const formik = useFormik({
@@ -54,6 +57,8 @@ const Login: React.FC = () => {
   });
   const usernameError = formik.touched.username && formik.errors.username;
   const passwordError = formik.touched.password && formik.errors.password;
+  const changeFormStateButtonText =
+    formState === "Login" ? "Don't have an account? Register here" : "Already have an account? Login here";
   return (
     <form
       className='flex flex-col mt-8 justify-center items-center max-w-[320px] mx-auto bg-gray- p-4'
@@ -83,23 +88,17 @@ const Login: React.FC = () => {
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
       />
-      <button type='submit' className='formButton'>
+      <button type='submit' className='formButton flex justify-center items-center gap-1'>
         {formState}
+        {SnowFlakeLoading}
       </button>
       <p
         className='text-purplePri mt-8 text-center hover:purpleSec underline underline-offset-2 cursor-pointer'
         onClick={toggleFormState}
       >
-        {formState === "Login"
-          ? "Don't have an account? Register here"
-          : "Already have an account? Login here"}
+        {changeFormStateButtonText}
       </p>
-      {status && <p className='text-center mt-2 pl-2 w-[100%] font-Poppins font-bold '>{status}</p>}
-      {authError && (
-        <p className='text-center mt-2 pl-2 w-[100%] font-Poppins font-bold text-red-600'>
-          {authError}
-        </p>
-      )}
+      {authError && <p className='text-center mt-2 pl-2 w-[100%] font-Poppins font-bold text-red-600'>{authError}</p>}
     </form>
   );
 };
