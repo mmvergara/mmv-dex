@@ -52,7 +52,7 @@ export interface Database {
           author: string
           title: string
           description: string
-          image_url: string
+          image_path: string
           img_is_compressed: boolean
           created_at: string
           updated_at: string
@@ -62,7 +62,7 @@ export interface Database {
           author: string
           title: string
           description: string
-          image_url: string
+          image_path: string
           img_is_compressed: boolean
           created_at?: string
           updated_at?: string
@@ -72,7 +72,7 @@ export interface Database {
           author?: string
           title?: string
           description?: string
-          image_url?: string
+          image_path?: string
           img_is_compressed?: boolean
           created_at?: string
           updated_at?: string

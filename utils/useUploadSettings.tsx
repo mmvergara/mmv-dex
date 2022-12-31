@@ -4,7 +4,7 @@ import { compressionMethod, uploadServer } from "../types";
 const useUploadSettings = () => {
   const [isCompressed, setIsCompressed] = useState<boolean>(true);
   const [compressionMethod, setCompressionMethod] = useState<compressionMethod>("client");
-  const [uploadServer, setUploadServer] = useState<uploadServer>("supabase");
+  const [uploadServer, setUploadServer] = useState<uploadServer>("vercel");
 
   const uploadSettings = {
     isCompressed,
@@ -52,17 +52,6 @@ const useUploadSettings = () => {
         <input
           type='radio'
           name='server'
-          value='supabase'
-          checked={"supabase" === uploadServer}
-          onChange={(e) => {
-            if (e.target.value === "supabase") setUploadServer("supabase");
-          }}
-        />{" "}
-        Supabase Server
-        <br />
-        <input
-          type='radio'
-          name='server'
           value='vercel'
           checked={"vercel" === uploadServer}
           onChange={(e) => {
@@ -70,6 +59,17 @@ const useUploadSettings = () => {
           }}
         />{" "}
         Vercel Server
+        <br />
+        <input
+          type='radio'
+          name='server'
+          value='supabase'
+          checked={"supabase" === uploadServer}
+          onChange={(e) => {
+            if (e.target.value === "supabase") setUploadServer("supabase");
+          }}
+        />{" "}
+        Supabase Server
       </div>
     </div>
   );

@@ -46,17 +46,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!isValid) throw newError("Invalid request", 403);
 
         // Validate image file
-        const { error: fileValidationError } = formidableFileValidation(img, [
-          "png",
-          "jpg",
-          "jpeg",
-        ]);
+        const { error: fileValidationError } = formidableFileValidation(img, ["png", "jpg", "jpeg"]);
         if (fileValidationError) throw newError(fileValidationError.message, 403);
 
         // Compression Options
         const img_is_compressed = compressed === "true";
         const compressionInSever = compressionMethod === "server";
-        let quality = 100; // 100 is default
+        let quality = 100;
         let compressionLevel = 1;
         if (img_is_compressed && compressionInSever) {
           quality = 2;
@@ -64,25 +60,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Process Image
-        const imgBuffer = await sharp(img.filepath)
-          .toFormat("png")
-          .png({ quality, compressionLevel })
-          .toBuffer();
+        const imgBuffer = await sharp(img.filepath).toFormat("png").png({ quality, compressionLevel }).toBuffer();
 
         // Upload Image to storage bucket
         const imageName = `vercel-${compressionMethod}compressed=${compressed}-${uniqid()}.png`;
-        const { data: imgData, error: imgError } = await supabase.storage
-          .from("post-images")
-          .upload(imageName, imgBuffer, {
-            upsert: false,
-            contentType: "image/png",
-          });
-        if (imgError) throw newError("Error uploading image", 409);
-
-        // Get Image Public Url
-        const { data: imgPublicUrl } = supabase.storage
-          .from("post-images")
-          .getPublicUrl(imgData?.path!);
+        const { data: imgData, error: imgError } = await supabase.storage.from("post-images").upload(imageName, imgBuffer, {
+          upsert: false,
+          contentType: "image/png",
+        });
+        if (imgError) throw newError(imgError.message, 409);
+        if (!imgData) throw newError("Error uploading image", 409);
 
         // Insert Post
         const { error } = await supabase.from("posts").insert({
@@ -90,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           description,
           title,
           img_is_compressed,
-          image_url: imgPublicUrl.publicUrl,
+          image_path: imgData.path,
         });
         if (error) throw newError(error.message, Number(error.code));
 

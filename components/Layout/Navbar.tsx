@@ -7,15 +7,15 @@ import { AiFillHome } from "react-icons/ai";
 import { GrClose } from "react-icons/gr";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import Link from "next/link";
+import { useUserRole } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const supabase = useSupabaseClient();
-  const router = useRouter();
   const user = useUser();
-
+  const role = useUserRole()
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
   const handleClose = () => setDrawerOpen((prev) => !prev);
 
@@ -23,7 +23,7 @@ const Navbar = () => {
     const { error } = await supabase.auth.signOut();
     if (error) toast.error(error.message);
     if (!error) toast.success("Logout Success");
-    router.push("/auth");
+    Router.push("/auth");
   };
 
   const username = emailToUsername(user?.email);

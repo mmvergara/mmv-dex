@@ -46,7 +46,7 @@ create table posts (
   author uuid references public.profiles on delete cascade not null,
   title text not null,
   description text not null,
-  image_url text not null,
+  image_path text not null,
   img_is_compressed boolean not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null,

@@ -1,44 +1,46 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "../supabase/client";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { DatabaseTypes } from "../types/db/db-types";
+import { toast } from "react-toastify";
 
-export const AuthContext = createContext<{ user: User | null; session: Session | null }>({
-  user: null,
-  session: null,
-});
+type role = "user" | "admin" | null;
+export const RoleContext = createContext<role>(null);
 
-export const AuthContextProvider = (props: any) => {
-  const [userSession, setUserSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+export const RoleContextProvider = (props: any) => {
+  const supabase = useSupabaseClient<DatabaseTypes>();
+  const user = useUser();
+  const [role, setRole] = useState<role>(null);
   useEffect(() => {
-    console.log("USE EFFECT AUTH");
-    supabase.auth.getSession().then(({ data }) => {
-      setUserSession(data.session);
-      setUser(data.session?.user ?? null);
-    });
+    const setRoleFromPofile = async () => {
+      if (!user?.id) {
+        setRole(null);
+        return;
+      }
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      if (!data) {
+        setRole(null);
+        return;
+      }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Supabase auth event: ${event}`);
-      setUserSession(session);
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      authListener.subscription;
+      let role: role = null;
+      if (data.role === "admin") role = data.role;
+      if (data.role === "user") role = data.role;
+      setRole(role);
     };
-  }, []);
-
-  const value = {
-    userSession,
-    user,
-  };
-  return <AuthContext.Provider value={value} {...props} />;
+    setRoleFromPofile();
+  }, [user]);
+  const value = { role };
+  return <RoleContext.Provider value={value} {...props} />;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
+export const useUserRole = () => {
+  const context = useContext(RoleContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within a AuthContextProvider.");
+    throw new Error("useRole must be used within a RoleContextProvider.");
   }
   return context;
 };

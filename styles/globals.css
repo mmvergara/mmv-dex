@@ -25,4 +25,8 @@
   .formButton {
     @apply w-[100%] p-2  bg-purplePri hover:bg-purpleSec rounded-md font-semibold text-white;
   }
+
+  .paginationButton {
+    @apply rounded-sm border-2 hover:bg-amber-600 hover:text-white p-2 transition-all
+  }
 }

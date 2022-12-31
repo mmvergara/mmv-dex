@@ -21,7 +21,10 @@ const CreatePost: React.FC = () => {
 
   const submitPostHandler = async () => {
     setIsLoading(true);
-    if (!image) return toast.error("Please provide an image.");
+    if (!image) {
+      toast.error("Please provide an image.");
+      return setIsLoading(false);
+    }
     let imgFile = image;
 
     // Compress client side
