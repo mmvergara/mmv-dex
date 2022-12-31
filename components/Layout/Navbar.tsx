@@ -3,7 +3,7 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
 import { emailToUsername } from "../../utils/parsers";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useUserRole } from "../../context/AuthContext";
+import { useUserRole } from "../../context/RoleContext";
 import { AiFillHome } from "react-icons/ai";
 import { useState } from "react";
 import { GrClose } from "react-icons/gr";

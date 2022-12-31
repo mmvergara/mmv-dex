@@ -19,27 +19,6 @@ export const postValidationSchema = yup.object({
   description: stringRequired("Description", 6, 500),
 });
 
-const x = {
-  name: "john doe",
-  date: new Date(),
-  // now() refers to whenever this evaluation was done
-  required_rating: {
-    // Score out of 5.
-    presentation_score: { score: "1", comment: "Needs improvement." },
-    technical_score: { score: "5", comment: "Excellent work." },
-    assists_peers_score: { score: "5", comment: "Assisted xyz with their work." },
-    documentation_score: {
-      score: "3",
-      comment: "Should use grammarly. Minor grammar and spelling mistakes.",
-    },
-  },
-  optional_rating: {
-    stood_out:
-      "This is where I would place something that stood out about this person for this rating period.",
-  },
-};
-
-
 const max_rating = yup.number().max(5, "Max rating is 5");
 
 export const peerReviewValidation = yup.object({

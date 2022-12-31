@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 
 type role = "user" | "admin" | null;
 export const RoleContext = createContext<role>(null);
-
 export const RoleContextProvider = (props: any) => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const user = useUser();
@@ -16,7 +15,7 @@ export const RoleContextProvider = (props: any) => {
         setRole(null);
         return;
       }
-      console.log('PROFILEE')
+      console.log("AUTH CONTEXT USE EEFFECT");
       const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
       if (error) {
         toast.error(error.message);
@@ -45,32 +44,3 @@ export const useUserRole = () => {
   }
   return context;
 };
-
-// import { User } from "@supabase/auth-helpers-nextjs";
-// import { createContext, useState, useEffect, useContext } from "react";
-// import { supabase } from "../supabase/client";
-
-// const AuthContext = createContext<User | null>(null);
-// export const useAuth = () => useContext(AuthContext);
-// export const AuthProvider = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
-//   const [loading, setLoading] = useState<boolean>(false);
-//   const [user, setUser] = useState<User | null>(null!);
-
-//   useEffect(() => {
-//     console.log("USEEFFECT ");
-//     if(!user) {
-//       const
-//     }
-//     supabase.auth.onAuthStateChange(async (event, session) => {
-//       console.log("AUTH STATE CHANGED: ", event);
-//       if (event == "SIGNED_IN" && session) {
-//         setUser(session?.user);
-//       }
-//       setLoading(false);
-//     });
-//   }, [user]);
-
-//   return (
-//     <AuthContext.Provider value={user}>{!loading ? children : "LOADING..."}</AuthContext.Provider>
-//   );
-// };

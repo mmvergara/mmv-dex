@@ -2,7 +2,7 @@ import { classNameJoin, getImagePublicUrl, getServerSidePropsRedirectTo } from "
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useEffect, useState } from "react";
 import { emailToUsername } from "../../utils/parsers";
-import { useUserRole } from "../../context/AuthContext";
+import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
 import { useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import Image from "next/image";
 import Head from "next/head";
 import axios from "axios";
 import { axiosErrorParse } from "../../utils/error-handling";
+import Link from "next/link";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const postid = String(context.params?.postid);
@@ -26,7 +27,7 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
 
   const deletePostHandler = async () => {
     try {
-      const { data } = await axios.delete(`/api/post/delete?postid=${post?.id}`);
+      await axios.delete(`/api/post/delete?postid=${post?.id}`);
       toast.success("Post delete successfully");
     } catch (e) {
       const { error } = axiosErrorParse(e);
@@ -40,6 +41,7 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
 
   if (!post) return <h1 className='text-3xl sm:text-6xl text-center mt-10'>Post not found 😭</h1>;
   const canDelete = post.author === user?.id || role === "admin";
+
   return (
     <>
       <Head>
@@ -50,9 +52,11 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
       </Head>
       <section className='flex  items-center mt-2 sm:mt-5 m-4 mx-auto w-[100%] max-w-[600px] drop-shadow-lg'>
         <div className='flex flex-col m-4'>
-          <div className='text-3xl font-Poppins mb-2'>
-            @{!Array.isArray(post.profiles) && emailToUsername(post.profiles?.email)}
-          </div>
+          {!Array.isArray(post.profiles) && (
+            <Link href={`/profile/${emailToUsername(post.profiles?.email)}`} className='text-3xl font-Poppins mb-2'>
+              @{emailToUsername(post.profiles?.email)}
+            </Link>
+          )}
           <Image
             alt={`${post.title || ""} post preview image`}
             src={getImagePublicUrl(post.image_path, "post-images")}
@@ -75,7 +79,14 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
                   Delete Post
                 </button>
               )}
-              <button className='bg-green-500 p-1 sm:p-2 rounded-sm'>Review User</button>
+              <Link
+                href={`/peer-review/create?username=${
+                  !Array.isArray(post.profiles) && emailToUsername(post.profiles?.email)
+                }`}
+                className='bg-green-500 p-1 sm:p-2 rounded-sm'
+              >
+                Review User
+              </Link>
             </div>
           )}
         </div>

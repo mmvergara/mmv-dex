@@ -1,37 +1,26 @@
-import { authValidationSchema } from "../schemas/yup-schemas";
-import { axiosErrorParse } from "../utils/error-handling";
-import { useFormik } from "formik";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useState } from "react";
-import axios from "axios";
-import Router from "next/router";
-import { usernameToEmail } from "../utils/parsers";
-import { AuthError, AuthResponse } from "@supabase/supabase-js";
-import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
 import { getServerSideSupabaseClientSession } from "../supabase/services/auth-service";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { GetServerSidePropsContext } from "next";
+import { AuthError, AuthResponse } from "@supabase/supabase-js";
+import { authValidationSchema } from "../schemas/yup-schemas";
+import { usernameToEmail } from "../utils/parsers";
+import { useFormik } from "formik";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
+import Router from "next/router";
 import Head from "next/head";
+import { getServerSidePropsRedirectTo } from "../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
-  if (session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
+  if (session) return getServerSidePropsRedirectTo("/");
   return { props: {} };
 };
+
+
 const Login: React.FC = () => {
   const supabase = useSupabaseClient();
-  const user = useUser();
-  if (user) {
-    Router.push("/");
-    return <></>;
-  }
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
