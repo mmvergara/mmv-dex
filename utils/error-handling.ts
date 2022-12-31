@@ -1,10 +1,11 @@
 import { AxiosError } from "axios";
 
 export const apiError = (e: unknown) => {
+  console.log(e)
   const error = e as Error & { statusCode: number };
   return {
     errData: { error: { message: error.message }, data: null },
-    code: error.statusCode,
+    code: error.statusCode || 400,
   };
 };
 
@@ -16,7 +17,8 @@ export const newError = (errorMessage: string, errorCode: number) => {
 };
 
 export const axiosErrorParse = (err: unknown) => {
+  console.log(err)
   const error = err as AxiosError<{ data: null; error: { message: string } }>;
-  const message = error.response?.data.error.message || error.message;
-  return { data: null, error: { message } };
+  const message = error.response?.data?.error?.message || error.message;
+  return { error: { message } };
 };

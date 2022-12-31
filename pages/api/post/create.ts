@@ -1,15 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { DatabaseTypes } from "../../../types/db/db-types";
-import { apiError, newError } from "../../../utils/error-handling";
-import { recordNextJsApiCall } from "../../../utils/record-api-call";
-import formidable, { Formidable } from "formidable";
-import allowedMethod from "../../../utils/check-method";
-import sharp from "sharp";
-import uniqid from "uniqid";
-import validation from "../../../utils/yup-validator";
-import { postValidationSchema } from "../../../schemas/yup-schemas";
 import { formidableFileValidation } from "../../../utils/validators";
+import formidable, { Formidable } from "formidable";
+import { postValidationSchema } from "../../../schemas/yup-schemas";
+import { recordNextJsApiCall } from "../../../utils/record-api-call";
+import { apiError, newError } from "../../../utils/error-handling";
+import { DatabaseTypes } from "../../../types/db/db-types";
+import allowedMethod from "../../../utils/check-method";
+import validation from "../../../utils/yup-validator";
+import uniqid from "uniqid";
+import sharp from "sharp";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
@@ -64,10 +64,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Upload Image to storage bucket
         const imageName = `vercel-${compressionMethod}compressed=${compressed}-${uniqid()}.png`;
-        const { data: imgData, error: imgError } = await supabase.storage.from("post-images").upload(imageName, imgBuffer, {
-          upsert: false,
-          contentType: "image/png",
-        });
+        const { data: imgData, error: imgError } = await supabase.storage
+          .from("post-images")
+          .upload(imageName, imgBuffer, {
+            upsert: false,
+            contentType: "image/png",
+          });
         if (imgError) throw newError(imgError.message, 409);
         if (!imgData) throw newError("Error uploading image", 409);
 

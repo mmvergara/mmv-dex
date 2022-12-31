@@ -1,17 +1,19 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getPostById } from "../../supabase/services/posts-service";
 import { classNameJoin, getImagePublicUrl, getServerSidePropsRedirectTo } from "../../utils/helper-functions";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useEffect, useState } from "react";
+import { emailToUsername } from "../../utils/parsers";
+import { useUserRole } from "../../context/AuthContext";
+import { getPostById } from "../../supabase/services/posts-service";
+import { useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { emailToUsername } from "../../utils/parsers";
 import Head from "next/head";
-import { useUser } from "@supabase/auth-helpers-react";
-import { useUserRole } from "../../context/AuthContext";
+import axios from "axios";
+import { axiosErrorParse } from "../../utils/error-handling";
+
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const postid = String(context.params?.postid);
   if (!postid) return getServerSidePropsRedirectTo("/");
-
   const props = await getPostById(context, postid);
   return { props };
 };
@@ -22,11 +24,21 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
   const role = useUserRole();
   const { data: post, error } = props;
 
+  const deletePostHandler = async () => {
+    try {
+      const { data } = await axios.delete(`/api/post/delete?postid=${post?.id}`);
+      toast.success("Post delete successfully");
+    } catch (e) {
+      const { error } = axiosErrorParse(e);
+      if (error) toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);
 
-  if (!post) return <h1>Post not found 😭</h1>;
+  if (!post) return <h1 className='text-3xl sm:text-6xl text-center mt-10'>Post not found 😭</h1>;
   const canDelete = post.author === user?.id || role === "admin";
   return (
     <>
@@ -58,7 +70,11 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
           </div>
           {user && (
             <div className='flex mt-8 items-center gap-2 font-Poppins text-white'>
-              {canDelete && <button className='bg-red-500 p-1 sm:p-2 rounded-sm'>Delete Post</button>}
+              {(canDelete || true) && (
+                <button className='bg-red-500 p-1 sm:p-2 rounded-sm' type='button' onClick={deletePostHandler}>
+                  Delete Post
+                </button>
+              )}
               <button className='bg-green-500 p-1 sm:p-2 rounded-sm'>Review User</button>
             </div>
           )}

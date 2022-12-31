@@ -1,7 +1,6 @@
 import { supabaseClient } from "../supabase/clientz";
 
 export const classNameJoin = (...classes: string[]) => classes.filter(Boolean).join(" ");
-
 export const getServerSidePropsRedirectTo = (destination: string, permanent: boolean = false) => {
   return {
     redirect: {

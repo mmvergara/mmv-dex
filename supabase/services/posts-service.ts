@@ -51,6 +51,10 @@ export const getUserPostsTitleById = async (
   }
   return await supabase.from("posts").select("id,title,created_at").eq("id", user_id);
 };
+export const deletePostById = () => {
+  
+}
+
 
 export type postWithProfilesResponse = Awaited<ReturnType<typeof getPosts>>;
 export type postDetails = postWithProfilesResponse["data"];

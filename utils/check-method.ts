@@ -1,5 +1,5 @@
 import { NextApiRequest } from "next";
-
-export default function allowedMethod(req: NextApiRequest, allowedMethod: "PUT" | "POST" | "GET") {
+type httpMethods = "PUT" | "POST" | "GET" | "DELETE";
+export default function allowedMethod(req: NextApiRequest, allowedMethod: httpMethods) {
   return req.method === allowedMethod;
 }

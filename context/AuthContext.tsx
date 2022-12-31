@@ -16,6 +16,7 @@ export const RoleContextProvider = (props: any) => {
         setRole(null);
         return;
       }
+      console.log('PROFILEE')
       const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
       if (error) {
         toast.error(error.message);

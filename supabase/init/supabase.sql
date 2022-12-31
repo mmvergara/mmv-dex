@@ -159,7 +159,7 @@ returns boolean
 language plpgsql security definer
 as $$
 begin
-  return exists (select 1 from profiles where profiles.id = user_id and profiles.role = "admin");
+  return exists (select 1 from profiles where profiles.id = user_id and profiles.role = 'admin');
 end
 $$;
 
