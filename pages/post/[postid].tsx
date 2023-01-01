@@ -5,12 +5,14 @@ import { emailToUsername } from "../../utils/parsers";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
+import { BsTrashFill } from "react-icons/bs";
 import { useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import Head from "next/head";
 import axios from "axios";
 import Link from "next/link";
+import { MdOutlineRateReview } from "react-icons/md";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const postid = String(context.params?.postid);
@@ -53,7 +55,10 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
       <section className='flex  items-center mt-2 sm:mt-5 m-4 mx-auto w-[100%] max-w-[600px] drop-shadow-lg'>
         <div className='flex flex-col m-4'>
           {!Array.isArray(post.profiles) && (
-            <Link href={`/profile/${emailToUsername(post.profiles?.email)}`} className='text-3xl font-Poppins mb-2'>
+            <Link
+              href={`/profile/${emailToUsername(post.profiles?.email)}`}
+              className='text-3xl hover:underline underline-offset-4 font-Poppins mb-2'
+            >
               @{emailToUsername(post.profiles?.email)}
             </Link>
           )}
@@ -73,19 +78,29 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
             <p className='opacity-80 text-sm sm:text-2xl'>{post.description}</p>
           </div>
           {user && (
-            <div className='flex mt-8 items-center gap-2 font-Poppins text-white'>
+            <div className='flex mt-8 items-center gap-2 font-Poppins text-white text-center'>
               {canDelete && (
-                <button className='bg-red-500 p-1 sm:p-2 rounded-sm' type='button' onClick={deletePostHandler}>
-                  Delete Post
+                <button
+                  className='bg-red-500 flex gap-2 items-center p-1 sm:p-2 rounded-sm'
+                  type='button'
+                  onClick={deletePostHandler}
+                >
+                  <span className='inline text-2xl p-2 sm:p-0 '>
+                    <BsTrashFill />
+                  </span>
+                  <span className='hidden sm:block'>Delete Post</span>
                 </button>
               )}
               <Link
                 href={`/peer-review/create?username=${
                   !Array.isArray(post.profiles) && emailToUsername(post.profiles?.email)
                 }`}
-                className='bg-green-500 p-1 sm:p-2 rounded-sm'
+                className='bg-emerald-500  p-1 flex gap-2 items-center sm:p-2 rounded-sm'
               >
-                Review User
+                <span className='inline text-2xl p-2 sm:p-0 '>
+                  <MdOutlineRateReview />
+                </span>{" "}
+                <span className='hidden sm:block'>Review User</span>
               </Link>
             </div>
           )}

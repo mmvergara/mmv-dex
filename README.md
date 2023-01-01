@@ -4,12 +4,10 @@ ongoing....
 
 ## To Do:
 
-
 - server side validation supabase edge function
 - postgre function to update api_calls table called_by to null when a user is deleted
 - seo with Head Tags
 
-- User feedback when no posts are available
 
 ## Installation
 
@@ -25,7 +23,3 @@ ongoing....
 
 > Incremental Static Generation on Home Page
 >
-
-## Features
-- on demand incremental static generation
--
