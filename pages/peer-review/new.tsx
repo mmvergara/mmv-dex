@@ -1,15 +1,25 @@
-import { emailToUsername } from "../../utils/parsers";
+import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
+import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import { MdOutlineRateReview } from "react-icons/md";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { emailToUsername } from "../../utils/parsers";
 import { DatabaseTypes } from "../../types/db/db-types";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
 import Link from "next/link";
 import Head from "next/head";
 
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const { session } = await getServerSideSupabaseClientSession(ctx);
+  if (!session) return getServerSidePropsRedirectTo("/");
+  return { props: {} };
+};
+
 const NewPeerReview: React.FC = () => {
   const supabase = useSupabaseClient<DatabaseTypes>();
+  const session = useSession();
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading("", false);
   const [usernameLists, setUsernameLists] = useState<{ email: string; id: string }[] | null>(null);
   const [username, setUsername] = useState<string>("");
@@ -27,7 +37,7 @@ const NewPeerReview: React.FC = () => {
     setTimeout(async () => {
       setIsLoading(true);
       console.log("username", username);
-      const { data, error } = await supabase
+      const { data: profiles, error } = await supabase
         .from("profiles")
         .select("id,email")
         .like("email", `${username}%`)
@@ -41,7 +51,8 @@ const NewPeerReview: React.FC = () => {
         toast.error(error.message);
         return;
       }
-      if (data) setUsernameLists(data);
+      
+      if (profiles) setUsernameLists(profiles.filter((p) => p.id !== session?.user.id));
       setIsLoading(false);
     }, 500);
   }

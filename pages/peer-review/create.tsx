@@ -2,14 +2,15 @@ import { getServerSideSupabaseClientSession } from "../../supabase/services/auth
 import { getFormikErrorMessages, getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { GetServerSidePropsContext } from "next";
 import { peerReviewValidation } from "../../schemas/yup-schemas";
+import { axiosErrorParse } from "../../utils/error-handling";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
-import axios from "axios";
-import RequiredRatingField from "../../components/forms/Required-Rating-Field";
-import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
-import Head from "next/head";
-import { axiosErrorParse } from "../../utils/error-handling";
 import { toast } from "react-toastify";
+import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
+import RequiredRatingField from "../../components/forms/Required-Rating-Field";
+import axios from "axios";
+import Head from "next/head";
+
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(context);
   if (!session) return getServerSidePropsRedirectTo("/");
@@ -25,7 +26,7 @@ const CreatePeerReview: React.FC = () => {
     setIsLoading(true);
     try {
       await axios.put("/api/peer-review/create", { ...formik.values, date: new Date().toUTCString() });
-      toast.success("Review Submitted")
+      toast.success("Review Submitted");
     } catch (e) {
       const { error } = axiosErrorParse(e);
       toast.error(error.message);
@@ -33,6 +34,7 @@ const CreatePeerReview: React.FC = () => {
     setIsLoading(false);
   };
 
+  // Formik Config
   const formik = useFormik({
     initialValues: {
       name: initialUsername,
@@ -55,7 +57,6 @@ const CreatePeerReview: React.FC = () => {
     validationSchema: peerReviewValidation,
     onSubmit: handleSubmitPeerReview,
   });
-
   const RequiredRatings = Array.from(
     new Set(
       Object.keys(formik.values)
@@ -66,8 +67,8 @@ const CreatePeerReview: React.FC = () => {
         .map((x) => x.split("_rating")[0]) // remove "get required rating names"
     ) // turn to set to remove duplicates
   ); // Conver back to array
-
   const formikErrors = getFormikErrorMessages<typeof formik["initialValues"]>(formik);
+
   return (
     <>
       <Head>

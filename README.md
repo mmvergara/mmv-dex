@@ -12,8 +12,8 @@ ongoing....
 
 ## Installation
 
-> Initialize supabase Tables,Policies,Buckets 
- > Turn off email verification
+> Initialize supabase Tables,Policies,Buckets
+> Turn off email verification
 > Deploy supabase edge functions
 > add next.config.js SUPABASE URL
 
@@ -21,6 +21,4 @@ ongoing....
 
 > Generate types `npx supabase gen types typescript --project-id 'wujacgzqqczonhruxjan' --schema public > types/db/db-generated-types.ts`
 
-
 > Incremental Static Generation on Home Page
->

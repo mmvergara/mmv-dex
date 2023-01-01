@@ -1,15 +1,15 @@
-import type { AppProps } from "next/app";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { useState } from "react";
+import { RoleContextProvider } from "../context/RoleContext";
 import { ToastContainer } from "react-toastify";
+import type { AppProps } from "next/app";
+import { useState } from "react";
+import NProgress from "nprogress";
 import Router from "next/router";
 import Navbar from "../components/layout/Navbar";
 import "../styles/globals.css";
 import "nprogress/nprogress.css";
 import "react-toastify/dist/ReactToastify.css";
-import { RoleContextProvider } from "../context/RoleContext";
-import NProgress from "nprogress";
 
 Router.events.on("routeChangeStart", () => NProgress.configure({ showSpinner: false }).start());
 Router.events.on("routeChangeComplete", () => NProgress.configure({ showSpinner: false }).done());

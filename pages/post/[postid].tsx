@@ -1,18 +1,16 @@
 import { classNameJoin, getImagePublicUrl, getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { MdOutlineRateReview } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 import { emailToUsername } from "../../utils/parsers";
-import { axiosErrorParse } from "../../utils/error-handling";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
-import { useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
+import DeletePostButton from "../../components/post/DeletePostButton";
 import Image from "next/image";
 import Head from "next/head";
-import axios from "axios";
 import Link from "next/link";
-import { MdOutlineRateReview } from "react-icons/md";
-import DeletePostButton from "../../components/post/DeletePostButton";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const postid = String(context.params?.postid);
@@ -23,19 +21,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 export default function Post(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [imgIsLoading, setImgIsLoading] = useState(true);
+  const { data: post, error } = props;
+  const session = useSession();
   const role = useUserRole();
   const user = useUser();
-  const { data: post, error } = props;
-
-  const deletePostHandler = async () => {
-    try {
-      await axios.delete(`/api/post/delete?postid=${post?.id}`);
-      toast.success("Post delete successfully");
-    } catch (e) {
-      const { error } = axiosErrorParse(e);
-      if (error) toast.error(error.message);
-    }
-  };
 
   useEffect(() => {
     if (error) toast.error(error.message);
@@ -80,17 +69,17 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
           {user && (
             <div className='flex mt-8 items-center gap-2 font-Poppins text-white text-center'>
               {canDelete && <DeletePostButton postId={post.id} />}
-              <Link
-                href={`/peer-review/create?username=${
-                  !Array.isArray(post.profiles) && emailToUsername(post.profiles?.email)
-                }`}
-                className='bg-emerald-500  p-1 flex gap-2 items-center sm:p-2 rounded-sm'
-              >
-                <span className='inline text-2xl p-2 sm:p-0 '>
-                  <MdOutlineRateReview />
-                </span>{" "}
-                <span className='hidden sm:block'>Review User</span>
-              </Link>
+              {!Array.isArray(post.profiles) && session?.user.email !== post.profiles?.email && (
+                <Link
+                  href={`/peer-review/create?username=${emailToUsername(post.profiles?.email)}`}
+                  className='bg-emerald-500  p-1 flex gap-2 items-center sm:p-2 rounded-sm'
+                >
+                  <span className='inline text-2xl p-2 sm:p-0 '>
+                    <MdOutlineRateReview />
+                  </span>{" "}
+                  <span className='hidden sm:block'>Review User</span>
+                </Link>
+              )}
             </div>
           )}
         </div>

@@ -1,16 +1,16 @@
 import { getServerSideSupabaseClientSession } from "../supabase/services/auth-service";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { getServerSidePropsRedirectTo } from "../utils/helper-functions";
+import { useState, useRef, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
 import { AuthError, AuthResponse } from "@supabase/supabase-js";
 import { authValidationSchema } from "../schemas/yup-schemas";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { usernameToEmail } from "../utils/parsers";
-import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
-import Router, { useRouter } from "next/router";
 import Head from "next/head";
-import { getServerSidePropsRedirectTo } from "../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);

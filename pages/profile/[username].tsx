@@ -1,17 +1,20 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { emailToUsername, usernameToEmail } from "../../utils/parsers";
+import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { getUserPostsTitleById } from "../../supabase/services/posts-service";
 import { getUserProfile } from "../../supabase/services/auth-service";
+import { useUserRole } from "../../context/RoleContext";
+import { useSession } from "@supabase/auth-helpers-react";
 import { BiLinkAlt } from "react-icons/bi";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import Head from "next/head";
-import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const email = usernameToEmail(ctx.query?.username) || "";
   const { data: user, error: userErr } = await getUserProfile(ctx, email);
+  // Redirect if user does not exist
   if (!user || userErr) return getServerSidePropsRedirectTo("/");
 
   const { data: posts, error } = await getUserPostsTitleById(ctx, user.id, 5);
@@ -19,11 +22,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 export default function Profile(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const role = useUserRole();
+  const session = useSession();
   const { posts, user, error } = props;
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);
 
+  const isOwner = session?.user.email !== user.email;
   return (
     <>
       <Head>
@@ -39,18 +45,22 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
             <p>Joined: {new Date(user.inserted_at).toLocaleDateString()}</p>
           </div>
           <div className='flex gap-2'>
-            <Link
-              href={`/peer-review/user/${emailToUsername(user.email)}`}
-              className='bg-blue-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
-            >
-              See Reviews
-            </Link>
-            <Link
-              href={`/peer-review/create?username=${emailToUsername(user.email)}`}
-              className='bg-green-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
-            >
-              Review User
-            </Link>
+            {role === "admin" && (
+              <Link
+                href={`/peer-review/user/${emailToUsername(user.email)}`}
+                className='bg-blue-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
+              >
+                See Reviews
+              </Link>
+            )}
+            {isOwner && (
+              <Link
+                href={`/peer-review/create?username=${emailToUsername(user.email)}`}
+                className='bg-green-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
+              >
+                Review User
+              </Link>
+            )}
           </div>
         </section>
         <section className='mx-auto w-[100%] max-w-[600px] bg-slate-100 drop-shadow-lg p-4 rounded-lg m-2 flex flex-col justify-between'>

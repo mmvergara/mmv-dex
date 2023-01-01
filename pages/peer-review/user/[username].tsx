@@ -1,8 +1,8 @@
-import { GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
 import { getServerSideSupabaseClientSession } from "../../../supabase/services/auth-service";
 import { getServerSidePropsRedirectTo } from "../../../utils/helper-functions";
+import { GetServerSidePropsContext } from "next";
 import { usernameToEmail } from "../../../utils/parsers";
+import { useRouter } from "next/router";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session, supabase } = await getServerSideSupabaseClientSession(ctx);
@@ -15,8 +15,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (error) return getServerSidePropsRedirectTo("/");
   if (data?.role !== "admin") return getServerSidePropsRedirectTo("/");
 
-  //23
-
+  //Fetch user reviews
   return { props: {} };
 };
 

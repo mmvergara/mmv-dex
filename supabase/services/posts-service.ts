@@ -1,5 +1,3 @@
-// This file is for supabase queries that 
-
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
 import { posts, profiles } from "../../types/db/db-types";

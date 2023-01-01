@@ -1,8 +1,12 @@
+import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
+import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { useRef, useState, useEffect } from "react";
+import { GetServerSidePropsContext } from "next";
 import { postValidationSchema } from "../../schemas/yup-schemas";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { DatabaseTypes } from "../../types/db/db-types";
+import { AiFillHome } from "react-icons/ai";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
@@ -11,11 +15,7 @@ import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import axios from "axios";
 import Head from "next/head";
-import { GetServerSidePropsContext } from "next";
-import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
-import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import Link from "next/link";
-import { AiFillHome } from "react-icons/ai";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
@@ -95,9 +95,13 @@ const CreatePost: React.FC = () => {
 
   const clickUploadHandler = () => postImageInputRef.current.click();
   const postImageInputRef = useRef<HTMLInputElement>(null!);
+  const postTitleInputRef = useRef<HTMLInputElement>(null!);
   const titleError = formik.touched.title && formik.errors.title;
   const descriptionError = formik.touched.description && formik.errors.description;
 
+  useEffect(() => {
+    postTitleInputRef.current.focus();
+  }, []);
   return (
     <>
       <Head>
@@ -123,6 +127,7 @@ const CreatePost: React.FC = () => {
           placeholder='Title'
           id='title'
           name='title'
+          ref={postTitleInputRef}
           value={formik.values.title}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
