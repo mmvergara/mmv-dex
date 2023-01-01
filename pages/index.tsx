@@ -1,14 +1,13 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getPagination, getPosts, postDetailsQuery } from "../supabase/services/posts-service";
 import { InferGetServerSidePropsType } from "next";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { getImagePublicUrl } from "../utils/helper-functions";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import PostCard from "../components/post/PostCard";
 import Head from "next/head";
 import Link from "next/link";
-import { getImagePublicUrl } from "../utils/helper-functions";
 
 export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (context: GetServerSidePropsContext) => {
   const pageNumber = Number(context.query?.page) || 1;

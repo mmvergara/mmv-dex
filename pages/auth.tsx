@@ -80,7 +80,7 @@ const Login: React.FC = () => {
           {usernameError && <p className='text-left pl-2 w-[100%] text-red-600'>{usernameError}</p>}
           <input
             type='text'
-            className='w-[100%] mb-4 p-2 bg-inputPri sha focus:bg-white rounded-md tracking-wide font-Poppins'
+            className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
             placeholder='Username'
             id='username'
             name='username'
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
           />
           {passwordError && <p className='text-left pl-2 w-[100%] text-red-600'>{passwordError}</p>}
           <input
-            className='w-[100%] mb-4 p-2 bg-inputPri sha focus:bg-white rounded-md tracking-wide font-Poppins'
+            className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
             placeholder='Password'
             type='password'
             id='password'

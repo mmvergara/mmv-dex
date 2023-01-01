@@ -2,6 +2,7 @@ import { classNameJoin, getImagePublicUrl, getServerSidePropsRedirectTo } from "
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useEffect, useState } from "react";
 import { emailToUsername } from "../../utils/parsers";
+import { axiosErrorParse } from "../../utils/error-handling";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
 import { useUser } from "@supabase/auth-helpers-react";
@@ -9,7 +10,6 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import Head from "next/head";
 import axios from "axios";
-import { axiosErrorParse } from "../../utils/error-handling";
 import Link from "next/link";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -74,7 +74,7 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
           </div>
           {user && (
             <div className='flex mt-8 items-center gap-2 font-Poppins text-white'>
-              {(canDelete || true) && (
+              {canDelete && (
                 <button className='bg-red-500 p-1 sm:p-2 rounded-sm' type='button' onClick={deletePostHandler}>
                   Delete Post
                 </button>

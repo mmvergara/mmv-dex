@@ -4,7 +4,7 @@ import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import Router from "next/router";
-import Navbar from "../components/Layout/Navbar";
+import Navbar from "../components/layout/Navbar";
 import "../styles/globals.css";
 import "nprogress/nprogress.css";
 import "react-toastify/dist/ReactToastify.css";
