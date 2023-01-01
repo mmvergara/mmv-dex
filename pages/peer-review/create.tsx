@@ -8,6 +8,8 @@ import axios from "axios";
 import RequiredRatingField from "../../components/forms/Required-Rating-Field";
 import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
 import Head from "next/head";
+import { axiosErrorParse } from "../../utils/error-handling";
+import { toast } from "react-toastify";
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(context);
   if (!session) return getServerSidePropsRedirectTo("/");
@@ -21,8 +23,13 @@ const CreatePeerReview: React.FC = () => {
 
   const handleSubmitPeerReview = async () => {
     setIsLoading(true);
-    console.log("SUBMITTED");
-    await axios.put("/api/peer-review/create", { ...formik.values, date: new Date().toUTCString() });
+    try {
+      await axios.put("/api/peer-review/create", { ...formik.values, date: new Date().toUTCString() });
+      toast.success("Review Submitted")
+    } catch (e) {
+      const { error } = axiosErrorParse(e);
+      toast.error(error.message);
+    }
     setIsLoading(false);
   };
 
@@ -60,7 +67,6 @@ const CreatePeerReview: React.FC = () => {
     ) // turn to set to remove duplicates
   ); // Conver back to array
 
-  console.log(RequiredRatings);
   const formikErrors = getFormikErrorMessages<typeof formik["initialValues"]>(formik);
   return (
     <>

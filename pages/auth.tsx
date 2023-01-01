@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import Head from "next/head";
 import { getServerSidePropsRedirectTo } from "../utils/helper-functions";
 
@@ -18,9 +18,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return { props: {} };
 };
 
-
 const Login: React.FC = () => {
   const supabase = useSupabaseClient();
+  const router = useRouter();
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
@@ -48,6 +48,7 @@ const Login: React.FC = () => {
     if (error) setAuthError(error?.message || "Error Occured");
     if (!error) toast.success("Authenticated");
 
+    router.push("/");
     setIsLoading(false);
   };
 
@@ -66,7 +67,7 @@ const Login: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Dex | Auth </title>
+        <title>Dex | {formState} </title>
         <meta name='description' content='Dex home page' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />

@@ -13,6 +13,8 @@ import Head from "next/head";
 import axios from "axios";
 import Link from "next/link";
 import { MdOutlineRateReview } from "react-icons/md";
+import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
+import DeletePostButton from "../../components/post/DeletePostButton";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const postid = String(context.params?.postid);
@@ -52,8 +54,8 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <section className='flex  items-center mt-2 sm:mt-5 m-4 mx-auto w-[100%] max-w-[600px] drop-shadow-lg'>
-        <div className='flex flex-col m-4'>
+      <section className='flex  items-center mt-2 sm:mt-5 m-4 mx-auto h-[100%] max-w-[630px] drop-shadow-lg '>
+        <div className='flex flex-col m-4 h-[100%]'>
           {!Array.isArray(post.profiles) && (
             <Link
               href={`/profile/${emailToUsername(post.profiles?.email)}`}
@@ -73,24 +75,13 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
             )}
             onLoadingComplete={() => setImgIsLoading(false)}
           />
-          <div className='font-Poppins mt-2'>
-            <h1 className='text-xl sm:text-3xl text-left w-[100%] tracking-wide'>{post.title}</h1>
-            <p className='opacity-80 text-sm sm:text-2xl'>{post.description}</p>
+          <div className='font-Poppins mt-2 flex flex-col '>
+            <h1 className='text-xl sm:text-3xl text-left break-words tracking-wide max-w-[600px]'>{post.title}</h1>
+            <p className='break-all max-w-[600px]'>{post.description}</p>
           </div>
           {user && (
             <div className='flex mt-8 items-center gap-2 font-Poppins text-white text-center'>
-              {canDelete && (
-                <button
-                  className='bg-red-500 flex gap-2 items-center p-1 sm:p-2 rounded-sm'
-                  type='button'
-                  onClick={deletePostHandler}
-                >
-                  <span className='inline text-2xl p-2 sm:p-0 '>
-                    <BsTrashFill />
-                  </span>
-                  <span className='hidden sm:block'>Delete Post</span>
-                </button>
-              )}
+              {canDelete && <DeletePostButton postId={post.id} />}
               <Link
                 href={`/peer-review/create?username=${
                   !Array.isArray(post.profiles) && emailToUsername(post.profiles?.email)
