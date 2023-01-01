@@ -29,9 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
 
     // Insert peer review
-    const { error,data } = await supabase.from("peer_reviews").insert({ evaluation: JSONBPeerReview, reviewer: user.id }).select();
+    const { error } = await supabase.from("peer_reviews").insert({ evaluation: JSONBPeerReview, reviewer: user.id });
     if (error) throw newError(error.message, 409);
-    
+
     // Record Api Call
     await recordNextJsApiCall(req, supabase, user.id);
     res.status(200).send({ data: null, error: null });

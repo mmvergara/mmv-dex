@@ -5,7 +5,6 @@ import { emailToUsername } from "../../utils/parsers";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
-import { BsTrashFill } from "react-icons/bs";
 import { useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -13,7 +12,6 @@ import Head from "next/head";
 import axios from "axios";
 import Link from "next/link";
 import { MdOutlineRateReview } from "react-icons/md";
-import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
 import DeletePostButton from "../../components/post/DeletePostButton";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -25,8 +23,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 export default function Post(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [imgIsLoading, setImgIsLoading] = useState(true);
-  const user = useUser();
   const role = useUserRole();
+  const user = useUser();
   const { data: post, error } = props;
 
   const deletePostHandler = async () => {
@@ -44,7 +42,7 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
   }, []);
 
   if (!post) return <h1 className='text-3xl sm:text-6xl text-center mt-10'>Post not found 😭</h1>;
-  const canDelete = post.author === user?.id || role === "admin";
+  const canDelete = role === "admin" || post.author === user?.id;
 
   return (
     <>

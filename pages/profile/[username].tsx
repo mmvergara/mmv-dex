@@ -63,7 +63,7 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
                   <article key={p.id} className=' my-2 p-2 font-Poppins flex flex-wrap justify-between items-center'>
                     <p className='overflow-hidden'>
                       {p.title}
-                      <p className='opacity-50'>{new Date(p.created_at).toLocaleDateString()}</p>
+                      <span className='block opacity-50'>{new Date(p.created_at).toLocaleDateString()}</span>
                     </p>
                     <Link href={`/post/${p.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
                       {<BiLinkAlt />}

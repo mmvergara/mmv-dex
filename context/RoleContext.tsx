@@ -33,8 +33,8 @@ export const RoleContextProvider = (props: any) => {
     };
     setRoleFromPofile();
   }, [user]);
-  const value = { role };
-  return <RoleContext.Provider value={value} {...props} />;
+
+  return <RoleContext.Provider value={role} {...props} />;
 };
 
 export const useUserRole = () => {

@@ -3,7 +3,6 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
 import { emailToUsername } from "../../utils/parsers";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useUserRole } from "../../context/RoleContext";
 import { AiFillHome } from "react-icons/ai";
 import { useState } from "react";
 import { GrClose } from "react-icons/gr";
@@ -15,7 +14,6 @@ const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const supabase = useSupabaseClient();
   const user = useUser();
-  const role = useUserRole();
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
   const handleClose = () => setDrawerOpen((prev) => !prev);
 

@@ -4,8 +4,8 @@ import { GetServerSidePropsContext } from "next";
 import { AuthError, AuthResponse } from "@supabase/supabase-js";
 import { authValidationSchema } from "../schemas/yup-schemas";
 import { usernameToEmail } from "../utils/parsers";
+import { useState, useRef, useEffect } from "react";
 import { useFormik } from "formik";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
 import Router, { useRouter } from "next/router";
@@ -21,10 +21,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const Login: React.FC = () => {
   const supabase = useSupabaseClient();
   const router = useRouter();
+  const usernameInputRef = useRef<HTMLInputElement | null>(null!);
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
-
   const toggleFormState = () =>
     setFormState((prev) => {
       if (prev === "Login") return "Signup";
@@ -60,6 +60,11 @@ const Login: React.FC = () => {
     validationSchema: authValidationSchema,
     onSubmit: authHandler,
   });
+  useEffect(() => {
+    // Focus on the username input on the first render
+    usernameInputRef.current?.focus();
+  }, []);
+
   const usernameError = formik.touched.username && formik.errors.username;
   const passwordError = formik.touched.password && formik.errors.password;
   const changeFormStateButtonText =
@@ -80,6 +85,7 @@ const Login: React.FC = () => {
           <h2 className='text-5xl mb-4 font-Poppins'>{formState}</h2>
           {usernameError && <p className='text-left pl-2 w-[100%] text-red-600'>{usernameError}</p>}
           <input
+            ref={usernameInputRef}
             type='text'
             className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
             placeholder='Username'
