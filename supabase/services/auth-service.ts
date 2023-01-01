@@ -12,6 +12,5 @@ export const getServerSideSupabaseClientSession = async (context: GetServerSideP
 
 export const getUserProfile = async (GetServerSidePropsContext: GetServerSidePropsContext, email: string) => {
   const supabase = createServerSupabaseClient<DatabaseTypes>(GetServerSidePropsContext);
-
   return await supabase.from("profiles").select("*").eq("email", email).maybeSingle()
 };

@@ -1,7 +1,11 @@
+// This file is for supabase queries that 
+
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
 import { posts, profiles } from "../../types/db/db-types";
 import { DatabaseTypes } from "../../types/db/db-types";
+
+
 
 // getPagination codeby: silentworks https://github.com/supabase/supabase/discussions/1223
 export const getPagination = (page: number, size: number) => {
@@ -40,21 +44,22 @@ export const getUserPostsById = async (context: GetServerSidePropsContext, user_
   }
   return await supabase.from("posts").select("id,title,description,created_at,image_path").eq("id", user_id);
 };
-export const getUserPostsTitleById = async (
-  GetServerSidePropsContext: GetServerSidePropsContext,
-  user_id: string,
-  limit?: number
-) => {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(GetServerSidePropsContext);
+export const getUserPostsTitleById = async (context: GetServerSidePropsContext, user_id: string, limit?: number) => {
+  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   if (limit) {
-    return await supabase.from("posts").select("id,title,created_at").eq("author", user_id).limit(limit);
+    return await supabase
+      .from("posts")
+      .select("id,title,created_at")
+      .eq("author", user_id)
+      .order("created_at", { ascending: false })
+      .limit(limit);
   }
-  return await supabase.from("posts").select("id,title,created_at").eq("id", user_id);
+  return await supabase
+    .from("posts")
+    .select("id,title,created_at")
+    .eq("id", user_id)
+    .order("created_at", { ascending: false });
 };
-export const deletePostById = () => {
-  
-}
-
 
 export type postWithProfilesResponse = Awaited<ReturnType<typeof getPosts>>;
 export type postDetails = postWithProfilesResponse["data"];

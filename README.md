@@ -5,13 +5,9 @@ ongoing....
 ## To Do:
 
 
-- limit title and description length when displaying in profile or in home
-- post link solo ui component
-- peer review ui
 - server side validation supabase edge function
 - postgre function to update api_calls table called_by to null when a user is deleted
 - seo with Head Tags
-- protect routes
 
 - User feedback when no posts are available
 

@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           data: { user },
         } = await supabase.auth.getUser();
         if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
-        const userId = user.id;
+     
 
         // Parse Form Data
         type postFormDataFields = {
@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Insert Post
         const { error } = await supabase.from("posts").insert({
-          author: userId,
+          author: user.id,
           description,
           title,
           img_is_compressed,
@@ -84,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (error) throw newError(error.message, Number(error.code));
 
         // If there are no error, record api_call details to supabase
-        await recordNextJsApiCall(req, supabase, userId);
+        await recordNextJsApiCall(req, supabase, user.id);
 
         res.status(201).send({ data: { compressed, title, description }, error: null });
         resolved(null);

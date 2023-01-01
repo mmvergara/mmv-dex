@@ -1,6 +1,6 @@
 import { postDetailProps } from "../../supabase/services/posts-service";
 import { emailToUsername } from "../../utils/parsers";
-import { classNameJoin } from "../../utils/helper-functions";
+import { classNameJoin, limitStringToNLength } from "../../utils/helper-functions";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import Link from "next/link";
 const PostCard: React.FC<postDetailProps> = (post: postDetailProps) => {
   const { description, id, email, image_url, title } = post;
   const [imgIsLoading, setImgIsLoading] = useState(true);
+  console.log(limitStringToNLength(description, 150));
 
   return (
     <Link href={`post/${id}`} className=' hover:drop-shadow-2xl transition-all ease-in rounded-xl'>
@@ -24,9 +25,9 @@ const PostCard: React.FC<postDetailProps> = (post: postDetailProps) => {
           onLoadingComplete={() => setImgIsLoading(false)}
         />
       </div>
-      <p className='mt-1 text-lg font-medium text-gray-900'>{title}</p>
-      <p className=' text-sm font-medium text-gray-900 opacity-60'>@{emailToUsername(email)}</p>
-      <h3 className='mt-4 text-sm text-gray-700'>{description}</h3>
+      <p className='mt-1 text-lg font-medium text-gray-900 break-words'>{title}</p>
+      <p className=' text-sm font-medium text-gray-900 opacity-60 '>@{emailToUsername(email)}</p>
+      <h3 className='mt-4 text-sm text-gray-700 break-words'>{limitStringToNLength(description, 150)}</h3>
     </Link>
   );
 };

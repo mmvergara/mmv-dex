@@ -19,23 +19,23 @@ export const postValidationSchema = yup.object({
   description: stringRequired("Description", 6, 500),
 });
 
-const max_rating = yup.number().min(1,"Min rating is 1").max(5, "Max rating is 5");
+const max_score_rating = yup.number().min(1, "Minimum rating is 1").max(5, "Maximum rating is 5");
 
 export const peerReviewValidation = yup.object({
   name: stringRequired("Name is required", 6, 500),
   date: yup.date().required("Date is required"),
 
-  presentation_score_comment: stringRequired("Presentation score comment", 6, 500),
-  presentation_score_rating: max_rating,
+  presentation_rating_comment: stringRequired("Presentation score comment", 6, 500),
+  presentation_rating_score: max_score_rating,
 
-  technical_score_comment: stringRequired("Technical score comment", 6, 500),
-  technical_score_rating: max_rating,
+  technical_rating_comment: stringRequired("Technical score comment", 6, 500),
+  technical_rating_score: max_score_rating,
 
-  assists_peers_score_comment: stringRequired("Assissts peers score comment", 6, 500),
-  assists_peers_score_rating: max_rating,
+  assists_peers_rating_comment: stringRequired("Assissts peers score comment", 6, 500),
+  assists_peers_rating_score: max_score_rating,
 
-  documentation_score_comment: stringRequired("Documentation score comment", 6, 500),
-  documentation_score_rating: max_rating,
+  documentation_rating_comment: stringRequired("Documentation score comment", 6, 500),
+  documentation_rating_score: max_score_rating,
 
   optional_rating_stood_out: yup
     .string()

@@ -88,7 +88,7 @@ const CreatePost: React.FC = () => {
 
   return (
     <form
-      className='flex flex-col mt-8 justify-center items-center max-w-[340px] mx-auto bg-gray- p-4'
+      className='flex flex-col mt-8 justify-center items-center max-w-[500px] mx-auto bg-gray- p-4'
       onSubmit={formik.handleSubmit}
     >
       <h2 className='text-5xl mb-4 font-Poppins'>New Post</h2>
@@ -132,7 +132,7 @@ const CreatePost: React.FC = () => {
       </button>
       {imgPreviewUrl && (
         <>
-          <div className='relative w-[300px] h-[280px] pt-2 aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg mb-4 bg-gray-800 xl:aspect-w-7 xl:aspect-h-8'>
+          <div className='relative w-[400px] h-[280px] pt-2 aspect-w-1 aspect-h-1 overflow-hidden rounded-lg shadow-lg mb-4 bg-gray-800 xl:aspect-w-7 xl:aspect-h-8'>
             <Image alt='post image preview' src={imgPreviewUrl} className='object-cover ' fill />
           </div>
           {UploadSettingsUI}

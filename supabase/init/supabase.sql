@@ -120,7 +120,8 @@ WITH CHECK (is_admin(auth.uid()));
 CREATE TABLE peer_reviews (
   id bigint generated always as identity primary key,
   evaluation jsonb not null,
-  reviewer uuid references profiles on delete cascade not null
+  reviewer uuid references profiles on delete cascade not null,
+  inserted_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table peer_reviews

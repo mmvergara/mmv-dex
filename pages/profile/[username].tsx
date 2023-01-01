@@ -2,7 +2,6 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { emailToUsername, usernameToEmail } from "../../utils/parsers";
 import { getUserPostsTitleById } from "../../supabase/services/posts-service";
 import { getUserProfile } from "../../supabase/services/auth-service";
-import { BsTrashFill } from "react-icons/bs";
 import { BiLinkAlt } from "react-icons/bi";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -29,6 +28,7 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);
+
   return (
     <div className='flex flex-col justify-center mt-[30px] sm:mt-[80px]'>
       <section className='mx-auto w-[100%] max-w-[500px] bg-slate-100 drop-shadow-lg p-4 rounded-lg m-2 flex flex-col sm:flex-row gap-2 justify-center sm:justify-between items-center'>
@@ -55,7 +55,7 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
                     {p.title}
                     <p className='opacity-50'>{new Date(p.created_at).toLocaleDateString()}</p>
                   </p>
-                  <Link href={`/post/${p.id}`} className='bg-emerald-500 text-white rounded-sm p-1 text-xl '>
+                  <Link href={`/post/${p.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
                     {<BiLinkAlt />}
                   </Link>
                 </article>

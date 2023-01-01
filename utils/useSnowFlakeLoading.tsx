@@ -4,10 +4,12 @@ import { useState } from "react";
 const useSnowFlakeLoading = (tailwindClasses: string = "", initialState: boolean = false) => {
   const [isLoading, setIsLoading] = useState<boolean>(initialState);
 
-  const SnowFlakeLoading = isLoading && (
+  const SnowFlakeLoading = isLoading ? (
     <span className={`spin ${tailwindClasses}`}>
       <GiSnowflake2 />
     </span>
+  ) : (
+    <></>
   );
 
   return { isLoading, SnowFlakeLoading, setIsLoading };

@@ -71,7 +71,7 @@ const Navbar = () => {
                 <Link href='/post/create' className='navLink py-4 '>
                   Create Post
                 </Link>
-                <Link href='/peer-review/create' className='navLink py-4 '>
+                <Link href='/peer-review/new' className='navLink py-4 '>
                   Create Review
                 </Link>
                 <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
