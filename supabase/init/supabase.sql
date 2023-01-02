@@ -121,16 +121,17 @@ CREATE TABLE peer_reviews (
   id bigint generated always as identity primary key,
   evaluation jsonb not null,
   reviewer uuid references profiles on delete cascade not null,
+  reviewee uuid references profiles on delete cascade not null,
   inserted_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table peer_reviews
   enable row level security;
 
-CREATE POLICY "Enable authenticated users to create peer_reviews" ON "public"."peer_reviews"
+CREATE POLICY "users to create peer_reviews but not for themeselves" ON "public"."peer_reviews"
 AS PERMISSIVE FOR INSERT
 TO authenticated
-WITH CHECK (auth.uid() = reviewer);
+WITH CHECK (auth.uid() = reviewer and auth.uid() != reviewee)
 
 CREATE POLICY "Admin users can do CRUD on peer_reviews" ON "public"."peer_reviews"
 AS PERMISSIVE FOR ALL

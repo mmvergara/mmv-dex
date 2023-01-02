@@ -1,8 +1,7 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { emailToUsername, usernameToEmail } from "../../utils/parsers";
-import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { getUserPostsTitleById } from "../../supabase/services/posts-service";
-import { getUserProfile } from "../../supabase/services/auth-service";
+import { getUserProfileByEmail } from "../../supabase/services/auth-service";
 import { useUserRole } from "../../context/RoleContext";
 import { useSession } from "@supabase/auth-helpers-react";
 import { BiLinkAlt } from "react-icons/bi";
@@ -13,9 +12,9 @@ import Head from "next/head";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const email = usernameToEmail(ctx.query?.username) || "";
-  const { data: user, error: userErr } = await getUserProfile(ctx, email);
-  // Redirect if user does not exist
-  if (!user || userErr) return getServerSidePropsRedirectTo("/");
+  const { data: user, error: userErr } = await getUserProfileByEmail(ctx, email);
+
+  if (!user || userErr) return { notFound: true };
 
   const { data: posts, error } = await getUserPostsTitleById(ctx, user.id, 5);
   return { props: { user, posts, error } };
@@ -29,7 +28,7 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
     if (error) toast.error(error.message);
   }, []);
 
-  const isOwner = session?.user.email !== user.email;
+  const isOwner = session?.user.email === user.email;
   return (
     <>
       <Head>
@@ -47,13 +46,13 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
           <div className='flex gap-2'>
             {role === "admin" && (
               <Link
-                href={`/peer-review/user/${emailToUsername(user.email)}`}
+                href={`/peer-review/p/user/${emailToUsername(user.email)}`}
                 className='bg-blue-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
               >
                 See Reviews
               </Link>
             )}
-            {isOwner && (
+            {session?.user && !isOwner && (
               <Link
                 href={`/peer-review/create?username=${emailToUsername(user.email)}`}
                 className='bg-green-500 text-white p-2 font-Poppins font-semiBold rounded-sm'

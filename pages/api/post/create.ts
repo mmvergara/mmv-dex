@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { formidableFileValidation } from "../../../utils/validators";
+import { validation, formidableFileValidation } from "../../../utils/validators";
 import formidable, { Formidable } from "formidable";
 import { postValidationSchema } from "../../../schemas/yup-schemas";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
 import { apiError, newError } from "../../../utils/error-handling";
 import { DatabaseTypes } from "../../../types/db/db-types";
 import allowedMethod from "../../../utils/check-method";
-import validation from "../../../utils/yup-validator";
 import uniqid from "uniqid";
 import sharp from "sharp";
 
@@ -29,7 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           data: { user },
         } = await supabase.auth.getUser();
         if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
-     
 
         // Parse Form Data
         type postFormDataFields = {

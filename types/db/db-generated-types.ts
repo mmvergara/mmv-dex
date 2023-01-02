@@ -34,16 +34,22 @@ export interface Database {
           id: number
           evaluation: Json
           reviewer: string
+          reviewee: string
+          inserted_at: string
         }
         Insert: {
           id?: never
           evaluation: Json
           reviewer: string
+          reviewee: string
+          inserted_at?: string
         }
         Update: {
           id?: never
           evaluation?: Json
           reviewer?: string
+          reviewee?: string
+          inserted_at?: string
         }
       }
       posts: {

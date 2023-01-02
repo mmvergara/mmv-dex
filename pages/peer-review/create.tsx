@@ -1,5 +1,5 @@
 import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
-import { getFormikErrorMessages, getServerSidePropsRedirectTo } from "../../utils/helper-functions";
+import { getFormikErrorMessages, getRequiredRatings } from "../../utils/helper-functions";
 import { GetServerSidePropsContext } from "next";
 import { peerReviewValidation } from "../../schemas/yup-schemas";
 import { axiosErrorParse } from "../../utils/error-handling";
@@ -13,7 +13,7 @@ import Head from "next/head";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(context);
-  if (!session) return getServerSidePropsRedirectTo("/");
+  if (!session) return { notFound: true };
   return { props: {} };
 };
 
@@ -33,7 +33,6 @@ const CreatePeerReview: React.FC = () => {
     }
     setIsLoading(false);
   };
-
   // Formik Config
   const formik = useFormik({
     initialValues: {
@@ -57,16 +56,7 @@ const CreatePeerReview: React.FC = () => {
     validationSchema: peerReviewValidation,
     onSubmit: handleSubmitPeerReview,
   });
-  const RequiredRatings = Array.from(
-    new Set(
-      Object.keys(formik.values)
-        .filter((formikFields) => {
-          // Get required fields from formik.values
-          return formikFields.endsWith("score") || formikFields.endsWith("comment");
-        })
-        .map((x) => x.split("_rating")[0]) // remove "get required rating names"
-    ) // turn to set to remove duplicates
-  ); // Conver back to array
+  const RequiredRatings = getRequiredRatings(formik.values);
   const formikErrors = getFormikErrorMessages<typeof formik["initialValues"]>(formik);
 
   return (
@@ -127,7 +117,6 @@ const CreatePeerReview: React.FC = () => {
                 onChange={formik.handleChange}
               />
             </div>
-
             <button type='submit' className='formButton mt-4 flex justify-center items-center gap-2'>
               Submit Review <span className='text-xl flex'>{isLoading && SnowFlakeLoading}</span>
             </button>

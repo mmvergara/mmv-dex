@@ -1,5 +1,4 @@
 import { getServerSideSupabaseClientSession } from "../supabase/services/auth-service";
-import { getServerSidePropsRedirectTo } from "../utils/helper-functions";
 import { useState, useRef, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
 import { AuthError, AuthResponse } from "@supabase/supabase-js";
@@ -14,7 +13,11 @@ import Head from "next/head";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
-  if (session) return getServerSidePropsRedirectTo("/");
+  if (session)
+    return {
+      destination: "/",
+      permanent: false,
+    };
   return { props: {} };
 };
 
@@ -46,9 +49,11 @@ const Login: React.FC = () => {
     if (response) error = response.error || null;
 
     if (error) setAuthError(error?.message || "Error Occured");
-    if (!error) toast.success("Authenticated");
+    if (!error) {
+      toast.success("Authenticated");
+      router.push("/");
+    }
 
-    router.push("/");
     setIsLoading(false);
   };
 

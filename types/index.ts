@@ -42,3 +42,9 @@ export interface evaluationNotParsed {
 export type dbPostDetails = posts & { profiles: profiles };
 export type compressionMethod = "server" | "client";
 export type uploadServer = "supabase" | "vercel";
+
+// Helper
+export type ObjectEntries<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];
+

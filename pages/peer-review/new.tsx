@@ -1,6 +1,5 @@
 import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import { MdOutlineRateReview } from "react-icons/md";
@@ -13,7 +12,7 @@ import Head from "next/head";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
-  if (!session) return getServerSidePropsRedirectTo("/");
+  if (!session) return { notFound: true };
   return { props: {} };
 };
 
@@ -51,7 +50,7 @@ const NewPeerReview: React.FC = () => {
         toast.error(error.message);
         return;
       }
-      
+
       if (profiles) setUsernameLists(profiles.filter((p) => p.id !== session?.user.id));
       setIsLoading(false);
     }, 500);

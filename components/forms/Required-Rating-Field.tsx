@@ -17,7 +17,7 @@ const RequiredRatingField = ({
 }) => {
   return (
     <div className='my-4 border-2 p-4 rounded-sm shadow-md'>
-      <p className='font-Poppins text-1xl sm:text-2xl'>{label.charAt(0).toUpperCase() + label.slice(1)}</p>
+      <p className='font-Poppins text-1xl sm:text-2xl'>{label.charAt(0).toUpperCase() + label.slice(1).replace("_",' ')}</p>
       <p className='inline mr-4'>Rating (1-5) :</p>
       <input
         aria-label={label + "Rating (1-5)"}

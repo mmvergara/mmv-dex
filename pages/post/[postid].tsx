@@ -1,4 +1,4 @@
-import { classNameJoin, getImagePublicUrl, getServerSidePropsRedirectTo } from "../../utils/helper-functions";
+import { classNameJoin, getImagePublicUrl } from "../../utils/helper-functions";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { MdOutlineRateReview } from "react-icons/md";
 import { useEffect, useState } from "react";
@@ -13,8 +13,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const postid = String(context.params?.postid);
-  if (!postid) return getServerSidePropsRedirectTo("/");
+  const postid = String(context.params?.postid) || "";
   const props = await getPostById(context, postid);
   return { props };
 };

@@ -1,5 +1,4 @@
 import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
-import { getServerSidePropsRedirectTo } from "../../utils/helper-functions";
 import { useRef, useState, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
 import { postValidationSchema } from "../../schemas/yup-schemas";
@@ -19,7 +18,7 @@ import Link from "next/link";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
-  if (!session) return getServerSidePropsRedirectTo("/");
+  if (!session) return { notFound: true };
   return { props: {} };
 };
 
