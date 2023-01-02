@@ -18,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Validate New Peer Review Request body
     let { isValid } = await validation(peerReviewValidation, body);
     if (!isValid) throw newError("Invalid Request", 400);
-    console.log({ isValid });
 
     const peer_review_evaluation: peer_review_evaluation = {
       name: body.name,

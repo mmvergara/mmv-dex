@@ -8,7 +8,6 @@ import Link from "next/link";
 const PostCard: React.FC<postDetailProps> = (post: postDetailProps) => {
   const { description, id, email, image_url, title } = post;
   const [imgIsLoading, setImgIsLoading] = useState(true);
-  console.log(limitStringToNLength(description, 150));
 
   return (
     <Link href={`post/${id}`} className=' hover:drop-shadow-2xl transition-all ease-in rounded-xl'>

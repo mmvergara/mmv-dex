@@ -6,6 +6,7 @@ interface RatingCardProps {
   ratingScore?: number;
   isOptionalRating?: boolean;
 }
+
 const RatingCard: React.FC<RatingCardProps> = ({ ratingComment, ratingName, ratingScore, isOptionalRating }) => {
   const nameRemoveScore = ratingName.replace("_score", "").replace("_", " ");
   const RatingNameTransformed = nameRemoveScore.charAt(0).toUpperCase() + nameRemoveScore.slice(1);

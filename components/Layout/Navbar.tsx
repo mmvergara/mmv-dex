@@ -9,13 +9,25 @@ import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";
 import Router from "next/router";
 import Link from "next/link";
+import CreateReviewDrawer from "../forms/CreateReviewDrawer";
 
 const Navbar = () => {
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const supabase = useSupabaseClient();
   const user = useUser();
-  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
-  const handleClose = () => setDrawerOpen((prev) => !prev);
+
+  const [navDrawerOpen, setNavDrawerOpen] = useState<boolean>(false);
+  const toggleNavDrawer = () => setNavDrawerOpen((prev) => !prev);
+
+  const [createReviewDrawerOpen, setCreateReviewDrawerOpen] = useState<boolean>(false);
+  const toggleCreateReviewDrawer = () => {
+    setCreateReviewDrawerOpen((prev) => !prev);
+    if (!createReviewDrawerOpen) toggleNavDrawer();
+  };
+
+  const closeAllDrawers = () => {
+    setNavDrawerOpen(false);
+    setCreateReviewDrawerOpen(false);
+  };
 
   const logoutHandler = async () => {
     const { error } = await supabase.auth.signOut();
@@ -39,7 +51,7 @@ const Navbar = () => {
           <span className='hidden sm:block'>Home</span>
         </Link>
         {user ? (
-          <p className='navLink text-xl' onClick={toggleDrawer}>
+          <p className='navLink text-xl' onClick={toggleNavDrawer}>
             <GiHamburgerMenu />
           </p>
         ) : (
@@ -51,27 +63,32 @@ const Navbar = () => {
           </Link>
         )}
       </span>
-      <Drawer isOpen={drawerOpen} placement='right' size='sm' onClose={handleClose}>
-        <DrawerOverlay onClick={toggleDrawer} />
+      <CreateReviewDrawer
+        isOpen={createReviewDrawerOpen}
+        toggleCreateReviewDrawer={toggleCreateReviewDrawer}
+        closeAllDrawers={closeAllDrawers}
+      />
+      <Drawer isOpen={navDrawerOpen} placement='right' size='sm' onClose={toggleNavDrawer}>
+        <DrawerOverlay onClick={toggleNavDrawer} />
         <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
           <DrawerHeader className='flex justify-between items-center'>
             <h4 className='font-Poppins p-4'>Hello! {username}</h4>
-            <span onClick={toggleDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2'>
+            <span onClick={toggleNavDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2'>
               <GrClose />
             </span>
           </DrawerHeader>
           <DrawerBody>
             {user && (
-              <ul onClick={toggleDrawer} className='flex flex-col font-Poppins font-semibold'>
+              <ul onClick={toggleNavDrawer} className='flex flex-col font-Poppins font-semibold'>
                 <Link href={`/profile/${username}`} className='navLink py-4 '>
                   My Profile
                 </Link>
                 <Link href='/post/create' className='navLink py-4 '>
                   Create Post
                 </Link>
-                <Link href='/peer-review/new' className='navLink py-4 '>
+                <a onClick={toggleCreateReviewDrawer} className='navLink py-4 '>
                   Create Review
-                </Link>
+                </a>
                 <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
                   Logout
                 </span>

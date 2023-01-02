@@ -35,7 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     res.status(200).send({ data: { message: "Post deleted successfully" }, error: null });
   } catch (e) {
-    console.log(e);
     const { code, errData } = apiError(e);
     res.status(code).send(errData);
   }

@@ -14,7 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send({ message: "/ revalidated" });
   } catch (e) {
     const { errData, code } = apiError(e);
-    console.log({ errData, code });
     res.status(code || 500).send(errData);
   }
 }

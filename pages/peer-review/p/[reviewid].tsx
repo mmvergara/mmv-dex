@@ -23,12 +23,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .select("*,peer_reviews_reviewer_fkey(reviewer:email),peer_reviews_reviewee_fkey(reviewee:email)")
     .eq("id", reviewid)
     .maybeSingle();
-  if (error) {
-    console.log(error);
-    return { notFound: true };
-  }
+  if (error) return { notFound: true };
   if (!review) return { notFound: true };
-  console.log({ review });
+  
   //Fetch user reviews
   return { props: { review } };
 };
@@ -36,9 +33,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 // red orange green cyangreen cyan
 function PeerReview({ review }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const evaluation = review.evaluation as peer_review_evaluation;
-  const requiredRatings = Object.entries(evaluation.required_rating) as ObjectEntries<
-    typeof evaluation.required_rating
-  >;
+  const { required_rating, optional_rating } = evaluation;
+
+  const requiredRatings = Object.entries(required_rating) as ObjectEntries<typeof required_rating>;
+  const optionalRatings = Object.entries(optional_rating) as ObjectEntries<typeof optional_rating>;
 
   const { peer_reviews_reviewee_fkey, peer_reviews_reviewer_fkey } = review;
 
@@ -64,12 +62,9 @@ function PeerReview({ review }: InferGetServerSidePropsType<typeof getServerSide
             {requiredRatings.map((r) => (
               <RatingCard key={uniqid(r[0])} ratingName={r[0]} ratingComment={r[1].comment} ratingScore={r[1].score} />
             ))}
-            <RatingCard
-              key={uniqid()}
-              ratingName={"Stood Out"}
-              ratingComment={evaluation.optional_rating.stood_out}
-              isOptionalRating={true}
-            />
+            {optionalRatings.map((r) => (
+              <RatingCard key={uniqid()} ratingName={r[0]} ratingComment={r[1]} isOptionalRating={true} />
+            ))}
           </div>
         </div>
       </section>
