@@ -2,7 +2,7 @@ import { getServerSideSupabaseClientSession } from "../supabase/services/auth-se
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
-import { MdOutlineRateReview } from "react-icons/md";
+import { MdOutlineRateReview, MdReviews } from "react-icons/md";
 import { emailToUsername } from "../utils/parsers";
 import { DatabaseTypes } from "../types/db/db-types";
 import { CgProfile } from "react-icons/cg";
@@ -61,7 +61,7 @@ const NewPeerReview: React.FC = () => {
     <>
       <Head>
         <title>Dex | Search Users</title>
-        <meta name='description' content='Page to select user to a peer review' />
+        <meta name='description' content='find users by searching their username' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
@@ -73,7 +73,6 @@ const NewPeerReview: React.FC = () => {
               <div className='flex text-purpleSec text-2xl'>{isLoading && SnowFlakeLoading}</div>
             </label>
             <input
-              list='users'
               name='Name'
               className='w-[100%] mb-4 p-2 bg-inputPri focus:bg-white rounded-md tracking-wide font-Poppins'
               type='text'
@@ -82,32 +81,7 @@ const NewPeerReview: React.FC = () => {
             />
             <div>
               <article>
-                {usernameLists?.map((user) => {
-                  const username = emailToUsername(user.email);
-                  return (
-                    <div className='flex items-center flex-wrap group gap-2 text-center sm:text-left w-[100%] hover:bg-slate-200 font-Poppins  border-2 p-2 my-2'>
-                      <p className='mr-auto font-semibold'>@{username}</p>
-                      <Link
-                        href={"/"}
-                        className='bg-sky-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
-                      >
-                        <span className='text-xl'>
-                          <CgProfile />
-                        </span>
-                        <span className="hidden sm:block">see profile</span>
-                      </Link>{" "}
-                      <Link
-                        href={"/"}
-                        className='bg-emerald-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
-                      >
-                        <span className='text-xl'>
-                          <MdOutlineRateReview />
-                        </span>
-                        <span className="hidden sm:block">review user</span>
-                      </Link>
-                    </div>
-                  );
-                })}
+                {usernameLists?.map((user) => UserLinks(emailToUsername(user.email)))}
                 {usernameLists?.length === 0 && <p>No User's Found 😞</p>}
               </article>
             </div>
@@ -117,4 +91,40 @@ const NewPeerReview: React.FC = () => {
     </>
   );
 };
+
 export default NewPeerReview;
+
+function UserLinks(username: string): JSX.Element {
+  return (
+    <div className='flex items-center flex-wrap group gap-2 text-center sm:text-left w-[100%] hover:bg-slate-200 font-Poppins border-2 p-2 my-2'>
+      <p className='mr-auto font-semibold'>@{username}</p>
+      <Link
+        href={`/profile/${username}`}
+        className='bg-blue-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
+      >
+        <span className='text-xl'>
+          <MdReviews />
+        </span>
+        <span className='hidden sm:block'>see reviews</span>
+      </Link>{" "}
+      <Link
+        href={`/profile/${username}`}
+        className='bg-sky-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
+      >
+        <span className='text-xl'>
+          <CgProfile />
+        </span>
+        <span className='hidden sm:block'>see profile</span>
+      </Link>{" "}
+      <Link
+        href={`/peer-review/create?username=${username}`}
+        className='bg-emerald-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
+      >
+        <span className='text-xl'>
+          <MdOutlineRateReview />
+        </span>
+        <span className='hidden sm:block'>review user</span>
+      </Link>
+    </div>
+  );
+}

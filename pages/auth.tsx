@@ -48,10 +48,12 @@ const Login: React.FC = () => {
     if (formState === "Signup") response = await supabase.auth.signUp(userData);
     if (response) error = response.error || null;
 
-    if (error) setAuthError(error?.message || "Error Occured");
-    if (!error) {
+    if (error) {
+      setAuthError(error?.message || "Error Occured");
+    } else {
       toast.success("Authenticated");
       router.push("/");
+      setAuthError(null);
     }
 
     setIsLoading(false);
