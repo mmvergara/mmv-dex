@@ -37,9 +37,5 @@ export const peerReviewValidation = yup.object({
   documentation_rating_comment: stringRequired("Documentation score comment", 6, 500),
   documentation_rating_score: max_score_rating,
 
-  optional_rating_stood_out: yup
-    .string()
-    .min(6, "stood_out Minimum of 6 characters")
-    .max(500, "stood_out Max of 500 characters")
-    .trim(),
+  optional_rating_stood_out: yup.string().max(500, "stood_out Max of 500 characters").trim(),
 });

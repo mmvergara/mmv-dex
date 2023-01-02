@@ -77,7 +77,7 @@ const CreateReviewDrawer: React.FC<props> = ({ isOpen, closeAllDrawers, toggleCr
                     name='Name'
                     className='w-[100%] mb-4 p-2 bg-slate-200 focus:bg-white rounded-md tracking-wide font-Poppins'
                     type='text'
-                    placeholder='Search Username'
+                    placeholder='Username'
                     onChange={(e) => setUsername(e.target?.value)}
                   />
                   <div>
@@ -86,9 +86,9 @@ const CreateReviewDrawer: React.FC<props> = ({ isOpen, closeAllDrawers, toggleCr
                         const username = emailToUsername(user.email);
                         return (
                           <Link
-                            key={user.id}
                             href={`/peer-review/create?username=${username}`}
-                            onClick={closeAllDrawers}
+                            key={user.id}
+                            onClick={() => closeAllDrawers()}
                             className='flex items-center group w-[100%] hover:bg-slate-200 font-Poppins font-semibold border-2 p-2 my-2'
                           >
                             <p className='mr-auto group-hover:underline'>@{username}</p>

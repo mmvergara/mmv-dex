@@ -89,6 +89,9 @@ const Navbar = () => {
                 <a onClick={toggleCreateReviewDrawer} className='navLink py-4 '>
                   Create Review
                 </a>
+                <Link href='/search-users' className='navLink py-4 '>
+                  Search Users
+                </Link>
                 <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
                   Logout
                 </span>

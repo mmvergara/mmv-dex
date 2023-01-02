@@ -26,7 +26,11 @@ const CreatePeerReview: React.FC = () => {
     setIsLoading(true);
     try {
       await axios.put("/api/peer-review/create", { ...formik.values, date: new Date().toUTCString() });
-      toast.success("Review Submitted");
+      toast.success("Review Submitted! Redirecting...");
+      formik.resetForm();
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     } catch (e) {
       const { error } = axiosErrorParse(e);
       toast.error(error.message);
@@ -72,7 +76,6 @@ const CreatePeerReview: React.FC = () => {
         <form className='w-[100%] max-w-[500px] mx-auto' onSubmit={formik.handleSubmit}>
           <div className='mx-2'>
             <label htmlFor='name' className='text-2xl font-semibold'>
-              {" "}
               Review for :
             </label>
             <input

@@ -1,9 +1,9 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { checkIfUserIsAdminById, getServerSideSupabaseClientSession } from "../../../supabase/services/auth-service";
-import { emailToUsername } from "../../../utils/parsers";
-import RatingCard from "../../../components/peer-review/RatingCard";
 import { peer_review_evaluation } from "../../../types/db/db-types";
+import { emailToUsername } from "../../../utils/parsers";
 import { ObjectEntries } from "../../../types";
+import RatingCard from "../../../components/peer-review/RatingCard";
 import uniqid from "uniqid";
 import Link from "next/link";
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -25,7 +25,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .maybeSingle();
   if (error) return { notFound: true };
   if (!review) return { notFound: true };
-  
+
   //Fetch user reviews
   return { props: { review } };
 };
@@ -62,9 +62,10 @@ function PeerReview({ review }: InferGetServerSidePropsType<typeof getServerSide
             {requiredRatings.map((r) => (
               <RatingCard key={uniqid(r[0])} ratingName={r[0]} ratingComment={r[1].comment} ratingScore={r[1].score} />
             ))}
-            {optionalRatings.map((r) => (
-              <RatingCard key={uniqid()} ratingName={r[0]} ratingComment={r[1]} isOptionalRating={true} />
-            ))}
+            {optionalRatings.map((r) => {
+              if (!r[1]) return;
+              return <RatingCard key={uniqid()} ratingName={r[0]} ratingComment={r[1]} isOptionalRating={true} />;
+            })}
           </div>
         </div>
       </section>
