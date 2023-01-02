@@ -16,7 +16,8 @@ export const getUserProfileByEmail = async (GetServerSidePropsContext: GetServer
 };
 
 // Check if the user is an admin
-export const checkIfUserIsAdminById = async (supabase: SupabaseClient, userId: string) => {
+export const checkIfUserIsAdminById = async (supabase: SupabaseClient, userId?: string) => {
+  if (!userId) return { isAdmin: false };
   const { data } = await supabase.from("profiles").select("role,id").eq("id", userId).maybeSingle();
   if (data?.role === "admin") return { isAdmin: true };
   return { isAdmin: false };

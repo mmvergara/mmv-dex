@@ -1,23 +1,17 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { checkIfUserIsAdminById, getServerSideSupabaseClientSession } from "../../../supabase/services/auth-service";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { peer_review_evaluation } from "../../../types/db/db-types";
 import { emailToUsername } from "../../../utils/parsers";
 import { ObjectEntries } from "../../../types";
+import DeletePeerReviewBtn from "../../../components/peer-review/DeletePeerReviewBtn";
 import RatingCard from "../../../components/peer-review/RatingCard";
 import uniqid from "uniqid";
 import Link from "next/link";
-import DeletePeerReviewBtn from "../../../components/peer-review/DeletePeerReviewBtn";
 import Head from "next/head";
+
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const { session, supabase } = await getServerSideSupabaseClientSession(ctx);
+  const supabase = createServerSupabaseClient(ctx);
   const reviewid = ctx.query?.reviewid || "";
-
-  // Check auth
-  if (!session) return { notFound: true };
-
-  // Check if user is admin
-  const { isAdmin } = await checkIfUserIsAdminById(supabase, session.user.id);
-  if (!isAdmin) return { notFound: true };
 
   // Check if peer_review exists
   const { data: review, error } = await supabase

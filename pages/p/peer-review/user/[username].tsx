@@ -8,16 +8,11 @@ import { BiLinkAlt } from "react-icons/bi";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../../../../utils/useSnowFlakeLoading";
 import Link from "next/link";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const { session, supabase } = await getServerSideSupabaseClientSession(ctx);
+  const supabase = createServerSupabaseClient(ctx);
   const email = usernameToEmail(ctx.query?.username) || "";
-
-  // Check auth
-  if (!session) return { notFound: true };
-
-  // Check if the user is an admin
-  const { isAdmin } = await checkIfUserIsAdminById(supabase, session.user.id);
 
   // Check if peer_review reviewee exists
   const { data: reviewee, error: revieweeErr } = await supabase
@@ -27,7 +22,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .maybeSingle();
 
   if (revieweeErr || !reviewee) return { notFound: true };
-  if (!isAdmin) return { notFound: true };
 
   //Fetch user reviews
   return { props: { reviewee } };
@@ -48,7 +42,7 @@ function UserPeerReviews({ reviewee }: InferGetServerSidePropsType<typeof getSer
       .from("peer_reviews")
       .select("id,reviewer,profiles!peer_reviews_reviewer_fkey(email)")
       .eq("reviewee", reviewee.id);
-      
+
     if (error) {
       toast.error(error.message);
       setPeerReviews([]);
