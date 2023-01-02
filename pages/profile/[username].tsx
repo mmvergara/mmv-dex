@@ -46,7 +46,7 @@ export default function Profile(props: InferGetServerSidePropsType<typeof getSer
           <div className='flex gap-2'>
             {role === "admin" && (
               <Link
-                href={`/peer-review/p/user/${emailToUsername(user.email)}`}
+                href={`/p/peer-review/user/${emailToUsername(user.email)}`}
                 className='bg-blue-500 text-white p-2 font-Poppins font-semiBold rounded-sm'
               >
                 See Reviews

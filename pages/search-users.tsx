@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { MdOutlineRateReview, MdReviews } from "react-icons/md";
 import { emailToUsername } from "../utils/parsers";
 import { DatabaseTypes } from "../types/db/db-types";
+import { useUserRole } from "../context/RoleContext";
 import { CgProfile } from "react-icons/cg";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
@@ -20,6 +21,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const NewPeerReview: React.FC = () => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const session = useSession();
+  const role = useUserRole();
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading("", false);
   const [usernameLists, setUsernameLists] = useState<{ email: string; id: string }[] | null>(null);
   const [username, setUsername] = useState<string>("");
@@ -81,7 +83,7 @@ const NewPeerReview: React.FC = () => {
             />
             <div>
               <article>
-                {usernameLists?.map((user) => UserLinks(emailToUsername(user.email)))}
+                {session?.user && usernameLists?.map((user) => UserLinks(emailToUsername(user.email), role))}
                 {usernameLists?.length === 0 && <p>No User's Found 😞</p>}
               </article>
             </div>
@@ -94,19 +96,21 @@ const NewPeerReview: React.FC = () => {
 
 export default NewPeerReview;
 
-function UserLinks(username: string): JSX.Element {
+function UserLinks(username: string, role?: string | null): JSX.Element {
   return (
     <div className='flex items-center flex-wrap group gap-2 text-center sm:text-left w-[100%] hover:bg-slate-200 font-Poppins border-2 p-2 my-2'>
       <p className='mr-auto font-semibold'>@{username}</p>
-      <Link
-        href={`/profile/${username}`}
-        className='bg-blue-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
-      >
-        <span className='text-xl'>
-          <MdReviews />
-        </span>
-        <span className='hidden sm:block'>see reviews</span>
-      </Link>{" "}
+      {role === "admin" && (
+        <Link
+          href={`/p/peer-review/user/${username}`}
+          className='bg-blue-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'
+        >
+          <span className='text-xl'>
+            <MdReviews />
+          </span>
+          <span className='hidden sm:block'>see reviews</span>
+        </Link>
+      )}
       <Link
         href={`/profile/${username}`}
         className='bg-sky-500 text-white p-2 ml-2 rounded-sm text-sm flex flex-grow-1 gap-1 items-center justify-center'

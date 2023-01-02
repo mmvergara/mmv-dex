@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq("email", usernameToEmail(peer_review_evaluation.name))
       .maybeSingle();
     if (error) throw newError(error.message, 400);
-    if (!reviewee) throw newError("User being reviewed does not exist", 400);
+    if (!reviewee) throw newError("User does not exist", 400);
 
     // Check if the user is trying to create a review for him/herself
     if (reviewee.id === user.id) throw newError("You cannot create a review for yourself", 409);

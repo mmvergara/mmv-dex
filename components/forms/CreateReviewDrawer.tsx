@@ -15,7 +15,7 @@ type props = {
   isOpen: boolean;
 };
 
-const CreateReviewDrawer: React.FC<props> = ({ isOpen, closeAllDrawers, toggleCreateReviewDrawer }: props) => {
+const CreateReviewDrawer: React.FC<props> = ({ isOpen, closeAllDrawers, toggleCreateReviewDrawer }) => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const session = useSession();
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading("", false);

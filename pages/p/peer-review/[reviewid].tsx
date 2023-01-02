@@ -6,6 +6,8 @@ import { ObjectEntries } from "../../../types";
 import RatingCard from "../../../components/peer-review/RatingCard";
 import uniqid from "uniqid";
 import Link from "next/link";
+import DeletePeerReviewBtn from "../../../components/peer-review/DeletePeerReviewBtn";
+import Head from "next/head";
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session, supabase } = await getServerSideSupabaseClientSession(ctx);
   const reviewid = ctx.query?.reviewid || "";
@@ -46,9 +48,17 @@ function PeerReview({ review }: InferGetServerSidePropsType<typeof getServerSide
     (!Array.isArray(peer_reviews_reviewer_fkey) && emailToUsername(peer_reviews_reviewer_fkey?.reviewer)) || "";
   return (
     <>
+      <Head>
+        <title>Dex | Peer Review #{review.id}</title>
+      </Head>
       <section className='mt-8 font-Poppins w-[100%] max-w-[600px] mx-auto p-4 bg-slate-100 drop-shadow-md rounded-lg'>
         <div className='m-2'>
-          <p className='text-3xl '>Peer Review #{review.id}</p>
+          <p className='text-3xl flex justify-between items-center'>
+            <span>Peer Review #{review.id}</span>
+            <span>
+              <DeletePeerReviewBtn reviewid={review.id} />
+            </span>
+          </p>
           <div className='opacity-80 ml-1'>
             <Link href={`/profile/${revieweeName}`} className='hover:underline'>
               Reviewee: @{revieweeName}

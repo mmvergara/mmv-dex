@@ -1,4 +1,4 @@
-const RatingScore: React.FC<{ rating: number }> = ({ rating }: { rating: number }) => {
+const RatingScore: React.FC<{ rating: number }> = ({ rating }) => {
   let bgColor = "bg-amber-500";
 
   if (rating === 1) bgColor = 'bg-red-600'

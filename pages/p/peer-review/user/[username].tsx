@@ -25,7 +25,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .select("*")
     .eq("email", email)
     .maybeSingle();
-    
+
   if (revieweeErr || !reviewee) return { notFound: true };
   if (!isAdmin) return { notFound: true };
 
@@ -48,12 +48,13 @@ function UserPeerReviews({ reviewee }: InferGetServerSidePropsType<typeof getSer
       .from("peer_reviews")
       .select("id,reviewer,profiles!peer_reviews_reviewer_fkey(email)")
       .eq("reviewee", reviewee.id);
+      
     if (error) {
       toast.error(error.message);
       setPeerReviews([]);
-    } else {
-      setPeerReviews(peerReview);
     }
+    if (!error) setPeerReviews(peerReview);
+
     setIsLoading(false);
   };
 

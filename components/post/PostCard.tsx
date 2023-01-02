@@ -5,7 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const PostCard: React.FC<postDetailProps> = (post: postDetailProps) => {
+const PostCard: React.FC<postDetailProps> = (post) => {
   const { description, id, email, image_url, title } = post;
   const [imgIsLoading, setImgIsLoading] = useState(true);
 

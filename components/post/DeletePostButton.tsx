@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { axiosErrorParse } from "../../utils/error-handling";
 import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
 type props = { postId: string | number };
-const DeletePostButton: React.FC<props> = ({ postId }: props) => {
+const DeletePostButton: React.FC<props> = ({ postId }) => {
   const router = useRouter();
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading("text-2xl");
   const deletePostHandler = async () => {
