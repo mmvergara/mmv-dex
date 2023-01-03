@@ -104,11 +104,29 @@ export interface Database {
           inserted_at?: string
         }
       }
+      test: {
+        Row: {
+          id: number
+          data: Json | null
+        }
+        Insert: {
+          id?: number
+          data?: Json | null
+        }
+        Update: {
+          id?: number
+          data?: Json | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      employee_review_keyword_analysis: {
+        Args: { pattern: string }
+        Returns: unknown
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean

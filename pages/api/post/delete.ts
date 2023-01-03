@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { apiError, newError } from "../../../utils/error-handling";
+import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { DatabaseTypes } from "../../../types/db/db-types";
-import allowedMethod from "../../../utils/check-method";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });

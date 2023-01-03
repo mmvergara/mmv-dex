@@ -20,24 +20,24 @@ export interface evaluationDefault {
   };
   optional_rating: optional_rating;
 }
-export interface evaluationNotParsed {
-  name: string;
-  date: Date;
-  stood_out?: string;
-  presentation_score_comment: evaluationRequiredRatingScores["comment"];
-  presentation_score_rating: evaluationRequiredRatingScores["score"];
+// export interface evaluationNotParsed {
+//   name: string;
+//   date: Date;
+//   stood_out?: string;
+//   presentation_score_comment: evaluationRequiredRatingScores["comment"];
+//   presentation_score_rating: evaluationRequiredRatingScores["score"];
 
-  technical_score_comment: evaluationRequiredRatingScores["comment"];
-  technical_score_rating: evaluationRequiredRatingScores["score"];
+//   technical_score_comment: evaluationRequiredRatingScores["comment"];
+//   technical_score_rating: evaluationRequiredRatingScores["score"];
 
-  assists_peers_score_comment: evaluationRequiredRatingScores["comment"];
-  assists_peers_score_rating: evaluationRequiredRatingScores["score"];
+//   assists_peers_score_comment: evaluationRequiredRatingScores["comment"];
+//   assists_peers_score_rating: evaluationRequiredRatingScores["score"];
 
-  documentation_score_comment: evaluationRequiredRatingScores["comment"];
-  documentation_score_rating: evaluationRequiredRatingScores["score"];
+//   documentation_score_comment: evaluationRequiredRatingScores["comment"];
+//   documentation_score_rating: evaluationRequiredRatingScores["score"];
 
-  optional_rating_stood_out?: optional_rating["stood_out"];
-}
+//   optional_rating_stood_out?: optional_rating["stood_out"];
+// }
 
 export type dbPostDetails = posts & { profiles: profiles };
 export type compressionMethod = "server" | "client";

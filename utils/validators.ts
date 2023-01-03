@@ -4,10 +4,9 @@ import * as yup from "yup";
 export async function validation<T = Record<string, any>>(scheme: yup.SchemaOf<T>, data: Record<string, any> | null) {
   try {
     await scheme.validate(data, { abortEarly: false });
-    return { isValid: true, errors: null };
-  } catch (error: any) {
-    const { errors } = error;
-    return { isValid: false, errors };
+    return { isValid: true };
+  } catch (e) {
+    return { isValid: false };
   }
 }
 
@@ -32,4 +31,5 @@ export const formidableFileValidation = (file: formidable.File, allowedFileTypes
 
   return { error };
 };
-// by:Crownie
+
+// by:mmvergara

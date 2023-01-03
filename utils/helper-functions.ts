@@ -1,8 +1,9 @@
 import { FormikState } from "formik";
 import { supabaseClient } from "../supabase/clientz";
+import { ObjectEntries } from "../types";
+import { peer_reviews, peer_review_required_ratings } from "../types/db/db-types";
 
 export const classNameJoin = (...classes: string[]) => classes.filter(Boolean).join(" ");
-
 
 export const getImagePublicUrl = (image_path: string, bucketName: string) => {
   const { data } = supabaseClient.storage.from(bucketName).getPublicUrl(image_path);
@@ -32,3 +33,118 @@ export const getRequiredRatings = (obj: { [key: string]: string } | any) => {
     ) // turn to set to remove duplicates
   ); // Conver back to array
 };
+
+// Refer to X as the "search query string"
+// Refer to X as the "search query string"
+export const postsKeywordAnalysis = (
+  posts: { id: number; description: string; author: string }[] | null,
+  searchString: string
+) => {
+  if (!posts || searchString.length === 0) return null;
+  const totalPosts = posts.length;
+  let total_OccurenceOf_X_InDesc = 0;
+  let total_OccurenceOf_X_InEachPostDescription_WithId: { id: number; searchStringOccurenceCount: number }[] = [];
+
+  // We are using a set so the users id won't be duplicated
+  const seenAuthors = new Set<string>();
+
+  for (let i = 0; i < posts.length; i++) {
+    const descriptionHasSearchString = posts[i].description.toLowerCase().includes(searchString.toLowerCase());
+
+    if (descriptionHasSearchString) {
+      const occurenceOfXinTheCurrentDescription = countOccurrences(posts[i].description, searchString);
+      total_OccurenceOf_X_InDesc += occurenceOfXinTheCurrentDescription;
+      total_OccurenceOf_X_InEachPostDescription_WithId.push({
+        id: posts[i].id,
+        searchStringOccurenceCount: occurenceOfXinTheCurrentDescription,
+      });
+    }
+    if (descriptionHasSearchString) seenAuthors.add(posts[i].author);
+  }
+
+  return {
+    totalPosts,
+    total_OccurenceOf_X_InDesc,
+    total_OccurenceOf_X_InEachPostDescription_WithId,
+    total_UsersUsing_X_inTheirDesc: seenAuthors.size,
+  };
+};
+
+export type PostAnalysisResult = ReturnType<typeof postsKeywordAnalysis>;
+
+const countOccurrences = (inputString: string, searchString: string): number => {
+  if (searchString.length === 0) return 0;
+  let counter = 0;
+  let startIndex = 0;
+
+  while (true) {
+    const index = inputString.toLowerCase().indexOf(searchString.toLowerCase(), startIndex);
+    if (index === -1) break;
+    counter++;
+    startIndex = index + searchString.length;
+  }
+
+  return counter;
+};
+
+// export const countOccurrences = (inputString: string, searchString: string): number => {
+//   if (searchString.length === 0) return 0;
+//   return inputString.toLowerCase().includes(searchString.toLowerCase()) ? 1 : 0;
+// };
+
+const getCommentsFromPR_required_ratings = (required_ratings: peer_review_required_ratings) => {
+  const evaluationValues = Object.values(required_ratings);
+  const comments = evaluationValues
+    .map((ev) => {
+      return ev.comment;
+    })
+    .join(" ");
+  return comments;
+};
+
+const getCommentsFromPR = (requiredRatings: any) => {
+  return Object.values(requiredRatings).join(" ");
+};
+
+type KeywordsAnalysis = {
+  [key: string]: {
+    keywordOccurrences: number;
+    reviewsContainingKeyword: number;
+  };
+};
+
+export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[], pattern: string) => {
+  if (!pattern) return null;
+
+  const reviewKeywords = pattern.split("|");
+  const keywordsAnalysis: KeywordsAnalysis = {};
+
+  for (const evaluation of evaluations) {
+    const seenKeyword = new Set<string>();
+    const comments = getCommentsFromPR(evaluation.evaluation.required_rating);
+    const optionalComments = Object.values(evaluation.evaluation.optional_rating).join(" ");
+    const allComments = `${comments} ${optionalComments}`;
+
+    for (const keyword of reviewKeywords) {
+      if (seenKeyword.has(keyword)) continue;
+      seenKeyword.add(keyword);
+
+      if (allComments.includes(keyword)) {
+        keywordsAnalysis[keyword] = {
+          reviewsContainingKeyword: (keywordsAnalysis[keyword]?.reviewsContainingKeyword || 0) + 1,
+          keywordOccurrences:
+            (keywordsAnalysis[keyword]?.keywordOccurrences || 0) + countOccurrences(allComments, keyword),
+        };
+      } else {
+        keywordsAnalysis[keyword] = {
+          reviewsContainingKeyword: 0,
+          keywordOccurrences: 0,
+        };
+      }
+    }
+  }
+
+  return Object.entries(keywordsAnalysis);
+};
+
+export type employeeReviewKeywordAnalysisResults = ReturnType<typeof employeeReviewKeywordAnalysis>;

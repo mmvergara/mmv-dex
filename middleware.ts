@@ -29,6 +29,8 @@ export async function middleware(req: NextRequest) {
   redirectUrl.pathname = "/";
   redirectUrl.searchParams.set(`ALISIN-MOTO-PAG-PRODUCTION-NA-redirectedFrom`, req.nextUrl.pathname);
   return NextResponse.redirect(redirectUrl);
+
+
 }
 
 export const config = {

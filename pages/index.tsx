@@ -16,6 +16,9 @@ export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (c
   const { from, to } = getPagination(pageNumber, postsPerPage);
   const { count, data, error } = await getPosts(context, { from, to });
   const hasMore = !!count && count - 1 > to;
+  let countt = 0;
+
+  console.log(countt);
   return { props: { data, error, hasMore } };
 };
 

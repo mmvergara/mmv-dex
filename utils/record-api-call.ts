@@ -1,3 +1,4 @@
+import { SupabaseClient } from "@supabase/supabase-js";
 import { NextApiRequest } from "next";
 import { DatabaseTypes } from "../types/db/db-types";
 

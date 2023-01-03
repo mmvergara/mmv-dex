@@ -155,7 +155,7 @@ CREATE POLICY "Enable insert image for authenticated users only on post-images b
 
 
 
--- is_admin database function
+
 create function public.is_admin(user_id uuid) 
 returns boolean
 language plpgsql security definer
@@ -166,6 +166,21 @@ end
 $$;
 
 
+create or replace function public.employee_review_keyword_analysis(pattern text) 
+returns boolean
+language plpgsql security definer
+as $$
+begin
+  return  SELECT *
+          FROM peer_reviews
+          WHERE evaluation::text ~* pattern
+end
+$$;
 
 
-
+create or replace function public.employee_review_keyword_analysis(pattern text) 
+returns setof peer_reviews  as $$
+  SELECT *
+  FROM peer_reviews
+  WHERE evaluation::text ~* pattern
+$$ language sql;

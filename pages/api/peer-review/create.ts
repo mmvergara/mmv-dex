@@ -4,9 +4,8 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { usernameToEmail } from "../../../utils/parsers";
 import { peerReviewValidation } from "../../../schemas/yup-schemas";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
-import { apiError, newError } from "../../../utils/error-handling";
+import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { validation } from "../../../utils/validators";
-import allowedMethod from "../../../utils/check-method";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });

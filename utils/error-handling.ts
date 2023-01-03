@@ -1,4 +1,10 @@
+import { NextApiRequest } from "next";
 import { AxiosError } from "axios";
+
+type httpMethods = "PUT" | "POST" | "GET" | "DELETE";
+export default function allowedMethod(req: NextApiRequest, allowedMethod: httpMethods) {
+  return req.method === allowedMethod;
+}
 
 export const apiError = (e: unknown) => {
   console.log(e)
