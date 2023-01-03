@@ -1,11 +1,10 @@
 import { DatabaseTypes, peer_review_evaluation } from "../../../types/db/db-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { usernameToEmail } from "../../../utils/parsers";
-import { peerReviewValidation } from "../../../schemas/yup-schemas";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
 import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
-import { validation } from "../../../utils/validators";
+import { peerReviewValidation, validation } from "../../../utils/models-validators";
+import { usernameToEmail } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });

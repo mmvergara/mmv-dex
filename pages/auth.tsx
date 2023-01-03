@@ -2,14 +2,14 @@ import { getServerSideSupabaseClientSession } from "../supabase/services/auth-se
 import { useState, useRef, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
 import { AuthError, AuthResponse } from "@supabase/supabase-js";
-import { authValidationSchema } from "../schemas/yup-schemas";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { usernameToEmail } from "../utils/parsers";
+import { usernameToEmail } from "../utils/helper-functions";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
 import Head from "next/head";
+import { authValidationSchema } from "../utils/models-validators";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
@@ -22,9 +22,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const Login: React.FC = () => {
+  const usernameInputRef = useRef<HTMLInputElement | null>(null!);
   const supabase = useSupabaseClient();
   const router = useRouter();
-  const usernameInputRef = useRef<HTMLInputElement | null>(null!);
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
@@ -55,7 +55,6 @@ const Login: React.FC = () => {
       router.push("/");
       setAuthError(null);
     }
-
     setIsLoading(false);
   };
 

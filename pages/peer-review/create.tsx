@@ -1,7 +1,7 @@
 import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
 import { getFormikErrorMessages, getRequiredRatings } from "../../utils/helper-functions";
 import { GetServerSidePropsContext } from "next";
-import { peerReviewValidation } from "../../schemas/yup-schemas";
+import { peerReviewValidation } from "../../utils/models-validators";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";

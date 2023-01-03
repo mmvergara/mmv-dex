@@ -1,13 +1,13 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { peer_review_evaluation } from "../../../types/db/db-types";
-import { emailToUsername } from "../../../utils/parsers";
 import { ObjectEntries } from "../../../types";
 import DeletePeerReviewBtn from "../../../components/peer-review/DeletePeerReviewBtn";
 import RatingCard from "../../../components/peer-review/RatingCard";
 import uniqid from "uniqid";
 import Link from "next/link";
 import Head from "next/head";
+import { emailToUsername } from "../../../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient(ctx);

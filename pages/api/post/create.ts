@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { validation, formidableFileValidation } from "../../../utils/validators";
+import { validation, formidableFileValidation, postValidationSchema } from "../../../utils/models-validators";
 import formidable, { Formidable } from "formidable";
-import { postValidationSchema } from "../../../schemas/yup-schemas";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
 import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { DatabaseTypes } from "../../../types/db/db-types";

@@ -18,7 +18,6 @@ export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (c
   const hasMore = !!count && count - 1 > to;
   let countt = 0;
 
-  console.log(countt);
   return { props: { data, error, hasMore } };
 };
 

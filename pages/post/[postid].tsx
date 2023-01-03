@@ -1,9 +1,8 @@
-import { classNameJoin, getImagePublicUrl } from "../../utils/helper-functions";
+import { classNameJoin, emailToUsername, getImagePublicUrl } from "../../utils/helper-functions";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { MdOutlineRateReview } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
-import { emailToUsername } from "../../utils/parsers";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
 import { toast } from "react-toastify";

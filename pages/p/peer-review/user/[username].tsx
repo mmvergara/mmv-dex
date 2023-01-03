@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { checkIfUserIsAdminById, getServerSideSupabaseClientSession } from "../../../../supabase/services/auth-service";
-import { emailToUsername, usernameToEmail } from "../../../../utils/parsers";
 import { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { DatabaseTypes } from "../../../../types/db/db-types";
@@ -9,6 +8,7 @@ import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../../../../utils/useSnowFlakeLoading";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { emailToUsername, usernameToEmail } from "../../../../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient(ctx);

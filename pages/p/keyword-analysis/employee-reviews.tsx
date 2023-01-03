@@ -1,15 +1,13 @@
 import useSnowFlakeLoading from "../../../utils/useSnowFlakeLoading";
 import { useState } from "react";
 import { SupabaseClient, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { DatabaseTypes, peer_reviews, peer_review_evaluation } from "../../../types/db/db-types";
+import { DatabaseTypes, peer_reviews } from "../../../types/db/db-types";
 import { HiSearchCircle } from "react-icons/hi";
 import type { SyntheticEvent } from "react";
 import { IoMdRefreshCircle } from "react-icons/io";
 import Head from "next/head";
 import { toast } from "react-toastify";
-import { employeeReviewKeywordAnalysis, postsKeywordAnalysis } from "../../../utils/helper-functions";
-import PostDescriptionKeywordAnalysis from "../../../components/keyword-analysis/PostDescriptionAnalysis";
-import { evaluationDefault } from "../../../types";
+import { employeeReviewKeywordAnalysis } from "../../../utils/helper-functions";
 import { PostgrestResponse } from "@supabase/supabase-js";
 import EmployeeReviewsKeywordAnalysisResults from "../../../components/keyword-analysis/EmployeeReviewAnalysis";
 
@@ -17,6 +15,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading();
 
+  const [reviews, setReviews] = useState<peer_reviews[] | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const pattern = searchQuery.split(",").join("|");
 
@@ -27,21 +26,15 @@ const EmployeeReviewsAnalysis: React.FC = () => {
     })) as PostgrestResponse<peer_reviews>;
   };
 
-  const [reviews, setReviews] = useState<peer_reviews[]>([]);
-
   const handleSearchSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     setIsLoading(true);
     const res = await fetchPostDescriptions(supabase);
-    if (!res) {
-      setIsLoading(false);
-      return toast.error("Error Occured");
-    }
+    if (!res) return setIsLoading(false);
 
     const { data, error } = res;
     if (error) toast.error(error.message);
     if (data) setReviews(data);
-
     setIsLoading(false);
   };
   const analysis = employeeReviewKeywordAnalysis(reviews, pattern);

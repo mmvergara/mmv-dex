@@ -1,9 +1,14 @@
 import { FormikState } from "formik";
 import { supabaseClient } from "../supabase/clientz";
-import { ObjectEntries } from "../types";
 import { peer_reviews, peer_review_required_ratings } from "../types/db/db-types";
 
 export const classNameJoin = (...classes: string[]) => classes.filter(Boolean).join(" ");
+
+export const emailToUsername = (email: string | any) =>
+  email && typeof email === "string" ? email.split("@").slice(0, -1)[0] : "";
+
+export const usernameToEmail = (username: string | any) =>
+  username && typeof username === "string" ? `${username}@dexlocalhost.com` : "";
 
 export const getImagePublicUrl = (image_path: string, bucketName: string) => {
   const { data } = supabaseClient.storage.from(bucketName).getPublicUrl(image_path);
@@ -87,11 +92,6 @@ const countOccurrences = (inputString: string, searchString: string): number => 
   return counter;
 };
 
-// export const countOccurrences = (inputString: string, searchString: string): number => {
-//   if (searchString.length === 0) return 0;
-//   return inputString.toLowerCase().includes(searchString.toLowerCase()) ? 1 : 0;
-// };
-
 const getCommentsFromPR_required_ratings = (required_ratings: peer_review_required_ratings) => {
   const evaluationValues = Object.values(required_ratings);
   const comments = evaluationValues
@@ -102,10 +102,6 @@ const getCommentsFromPR_required_ratings = (required_ratings: peer_review_requir
   return comments;
 };
 
-const getCommentsFromPR = (requiredRatings: any) => {
-  return Object.values(requiredRatings).join(" ");
-};
-
 type KeywordsAnalysis = {
   [key: string]: {
     keywordOccurrences: number;
@@ -113,15 +109,16 @@ type KeywordsAnalysis = {
   };
 };
 
-export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[], pattern: string) => {
+export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[] | null, pattern: string) => {
   if (!pattern) return null;
+  if (!evaluations) return null;
 
   const reviewKeywords = pattern.split("|");
   const keywordsAnalysis: KeywordsAnalysis = {};
 
   for (const evaluation of evaluations) {
     const seenKeyword = new Set<string>();
-    const comments = getCommentsFromPR(evaluation.evaluation.required_rating);
+    const comments = getCommentsFromPR_required_ratings(evaluation.evaluation.required_rating);
     const optionalComments = Object.values(evaluation.evaluation.optional_rating).join(" ");
     const allComments = `${comments} ${optionalComments}`;
 

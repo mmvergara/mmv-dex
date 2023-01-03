@@ -8,7 +8,7 @@ type Props = {
 };
 
 const EmployeeReviewsKeywordAnalysisResults: React.FC<Props> = ({ analysis, isLoading }) => {
-  if (analysis === null) return <></>;
+  if (!analysis || analysis?.length === 0) return <></>;
 
   return (
     <div className={`fontPoppins flex flex-col gap-2 p-4 mt-4 bg-slate-100 rounded-md ${isLoading && "opacity-20"}`}>

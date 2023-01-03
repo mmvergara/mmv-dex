@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { emailToUsername, usernameToEmail } from "../../utils/parsers";
+import { emailToUsername, usernameToEmail } from "../../utils/helper-functions";
 import { getUserPostsTitleById } from "../../supabase/services/posts-service";
 import { getUserProfileByEmail } from "../../supabase/services/auth-service";
 import { useUserRole } from "../../context/RoleContext";

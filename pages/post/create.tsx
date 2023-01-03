@@ -1,7 +1,6 @@
 import { getServerSideSupabaseClientSession } from "../../supabase/services/auth-service";
 import { useRef, useState, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
-import { postValidationSchema } from "../../schemas/yup-schemas";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { axiosErrorParse } from "../../utils/error-handling";
 import { DatabaseTypes } from "../../types/db/db-types";
@@ -15,6 +14,7 @@ import Image from "next/image";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
+import { postValidationSchema } from "../../utils/models-validators";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);

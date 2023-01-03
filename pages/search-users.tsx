@@ -3,7 +3,6 @@ import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import { MdOutlineRateReview, MdReviews } from "react-icons/md";
-import { emailToUsername } from "../utils/parsers";
 import { DatabaseTypes } from "../types/db/db-types";
 import { useUserRole } from "../context/RoleContext";
 import { CgProfile } from "react-icons/cg";
@@ -11,6 +10,7 @@ import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../utils/useSnowFlakeLoading";
 import Link from "next/link";
 import Head from "next/head";
+import { emailToUsername } from "../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
@@ -38,7 +38,6 @@ const NewPeerReview: React.FC = () => {
   async function getProfiles(username: string, signal: AbortSignal) {
     setTimeout(async () => {
       setIsLoading(true);
-      console.log("username", username);
       const { data: profiles, error } = await supabase
         .from("profiles")
         .select("id,email")
