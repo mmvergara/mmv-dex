@@ -29,6 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (postDelErr) throw newError("Could not delete post" + postDelErr.message, 400);
 
     // Delete post image
+    // Yeah we need to manully delete it 
+    // https://github.com/supabase/supabase/discussions/7067?sort=new
     const { error: postImgErr } = await supabase.storage.from("post-images").remove([image_path]);
     if (postImgErr) throw newError("Error deleting post image", 400);
     

@@ -6,9 +6,10 @@ ongoing....
 
 - server side validation supabase edge function
 
-- postgre function to update api_calls table called_by to null when a user is deleted
+- Admin Dashboard
+- postgre function to update api_calls table called_by to null when a user is deleted (NOT POSSIBLE)
 - seo with Head Tags
-- search user ui
+
 
 
 -SQL
@@ -27,3 +28,8 @@ ongoing....
 > Generate types `npx supabase gen types typescript --project-id 'wujacgzqqczonhruxjan' --schema public > types/db/db-generated-types.ts`
 
 > Incremental Static Generation on Home Page
+
+Notes:
+    // Delete post image
+    // Yeah we need to manully delete it 
+    // https://github.com/supabase/supabase/discussions/7067?sort=new

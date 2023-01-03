@@ -1,6 +1,5 @@
+import { classNameJoin, emailToUsername, limitStringToNLength } from "../../utils/helper-functions";
 import { postDetailProps } from "../../supabase/services/posts-service";
-import { emailToUsername } from "../../utils/parsers";
-import { classNameJoin, limitStringToNLength } from "../../utils/helper-functions";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";

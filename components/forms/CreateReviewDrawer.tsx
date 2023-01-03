@@ -2,7 +2,7 @@ import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { MdOutlineRateReview } from "react-icons/md";
-import { emailToUsername } from "../../utils/parsers";
+import { emailToUsername } from "../../utils/helper-functions";
 import { DatabaseTypes } from "../../types/db/db-types";
 import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";

@@ -87,7 +87,7 @@ function UserPeerReviews({ reviewee }: InferGetServerSidePropsType<typeof getSer
                       </Link>
                     </td>
                     <td className=' text-white flex justify-center items-center'>
-                      <Link href={`/peer-review/p/${pr.id}`} className='my-auto bg-emerald-500 p-2 mt-1 rounded-sm'>
+                      <Link href={`/p/peer-review/${pr.id}`} className='my-auto bg-emerald-500 p-2 mt-1 rounded-sm'>
                         <BiLinkAlt />
                       </Link>
                     </td>

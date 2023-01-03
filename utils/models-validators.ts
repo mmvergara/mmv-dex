@@ -1,6 +1,5 @@
-import formidable from "formidable";
 import * as yup from "yup";
-
+import { File as formidableFile } from "formidable";
 const stringRequired = (fieldName: string, min: number, max: number) => {
   return yup
     .string()
@@ -50,12 +49,15 @@ export async function validation<T = Record<string, any>>(scheme: yup.SchemaOf<T
   }
 }
 
-export const formidableFileValidation = (file: formidable.File, allowedFileTypes: string[]) => {
+
+// import { File as formidableFile } from "formidable";
+                                  // file is temporarily typed as any Formidable having issues with nextjs
+export const formidableFileValidation = (file: any, allowedFileTypes: string[]) => {
   let error: { message: string } | null = null;
   let message = "";
 
   // Check if it's a PersistentFile formidable file
-  if (!(file instanceof formidable.File)) message += "Invalid received data is not a file";
+  if (!file?.mimetype) message += "Invalid received data is not a file";
 
   // Check file type
   if (file.mimetype) {

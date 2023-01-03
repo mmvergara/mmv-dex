@@ -1,7 +1,7 @@
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
-import { emailToUsername } from "../../utils/parsers";
+import { emailToUsername } from "../../utils/helper-functions";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AiFillHome } from "react-icons/ai";
 import { useState } from "react";
