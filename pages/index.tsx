@@ -11,17 +11,16 @@ import Head from "next/head";
 import Link from "next/link";
 import { DatabaseTypes } from "../types/db/db-types";
 
-export const getServerSideProps: GetServerSideProps<any> = async (ctx: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (ctx: GetServerSidePropsContext) => {
   ctx.res.setHeader("Cache-Control", "public, s-maxage=15, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient<DatabaseTypes>(ctx);
   const pageNumber = Number(ctx.query?.page) || 1;
   const postsPerPage = 8;
-
   const { from, to } = getPagination(pageNumber, postsPerPage);
   const { count, data, error } = await getPosts(supabase, { from, to });
   const hasMore = !!count && count - 1 > to;
 
-  return { props: { data, error, hasMore, time: new Date().getSeconds() } };
+  return { props: { data, error, hasMore } };
 };
 
 export default function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -42,14 +41,14 @@ export default function Home(props: InferGetServerSidePropsType<typeof getServer
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore {props.time}</h1>
+        <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore</h1>
         <section className='mx-auto max-w-2xl py-8 px-4 sm:py-10 sm:px-6 lg:max-w-7xl lg:px-8 font-Poppins'>
           {posts &&
             (posts.length === 0 ? (
               <h4 className='text-6xl text-center mx-auto'>No post's 🤯 </h4>
             ) : (
               <div className='grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8'>
-                {posts.map((post:any) => {
+                {posts.map((post) => {
                   if (!(!Array.isArray(post.profiles) && post.profiles?.email)) return;
                   return (
                     <PostCard

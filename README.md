@@ -1,33 +1,67 @@
-# MMV DEX
+# Installation
 
-ongoing....
+## 1. Create a new supabase project
 
-## To Do:
+- https://supabase.com/ <br/>
+- Create a new account and create a project with the region of your choice
+- Go To and get your api keys and url https://app.supabase.com/project/_/settings/api
 
-- Admin Dashboard UI
+## 2. Initialize Supabase Tables | Policies | Functions
 
-- seo with Head Tags
+1. Go to the Project Source File > supabase > initialize.sql and <br/>
+   copy the all of sql queries then <br/>
+   paste it to `supabase > sql editor`
+
+   > This will create all of the database configs like table for the project
+
+2. Go to Database > Extensions > Enable HTTP Extension
+   > This project uses this http extension to automatically delete post images when a post is deleted
+3. Go to Authentication > Providers > Email > Turn off `Confirm Email`
+   > We only use username and password for auth
+4. Add `Supabase URL` Project in next.config.js remote patterns to enable
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [{ hostname: {YOUR SUPABASE URL HERE}, protocol: "https" }],
+  },
+};
+
+module.exports = nextConfig;
+```
+
+> This for our post images so that nextjs allows then
+
+## 4. Database Types | Deploye edge functions
+### Generate Database Types
+1. Install the Supabase CLI then login with your [access token](https://app.supabase.com/account/tokens)
+
+2. Run this command to generate Database Types
+
+```powershell
+npx supabase gen types typescript --project-id 'YOUR SUPABASE PROJECT URL HERE' --schema public > types/db/db-generated-types.ts
+```
+
+### Deploy Edge Funbctions
+Using the supabase CLI you can deploy your edge function using<br/>
+
+```powershell
+supabase functions deploy createpost --project-ref {YOUR SUPABASE PROJECT URL HERE}
+```
 
 
+## 6. Environment Variables and Dependencies
 
--SQL
- - Add Anon key devs policies for all operations
- - no public all policies should have roles
+Fill out `.env.local`
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+Install project dependencies and run the project
 
-## Installation
-> GO TO DB > Extensions > enable http
-> Initialize supabase Tables,Policies,Buckets
-> Turn off email verification
-> Deploy supabase edge functions
-> add next.config.js SUPABASE URL
-
-> supabase functions deploy createpost --project-ref {supabase_url}
-
-> Generate types `npx supabase gen types typescript --project-id 'wujacgzqqczonhruxjan' --schema public > types/db/db-generated-types.ts`
-
-> Incremental Static Generation on Home Page
-
-Notes:
-    // Delete post image
-    // Yeah we need to manully delete it 
-    // https://github.com/supabase/supabase/discussions/7067?sort=new
+```powershell
+npm install
+npm run dev
+```
