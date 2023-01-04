@@ -5,10 +5,10 @@ import { useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { toast } from "react-toastify";
-import { useUserRole } from "../../context/RoleContext";
-import { emailToUsername } from "../../utils/helper-functions";
+import { useUserRole } from "../context/RoleContext";
+import { emailToUsername } from "../utils/helper-functions";
 import { RiLoginCircleFill } from "react-icons/ri";
-import CreateReviewDrawer from "../forms/CreateReviewDrawer";
+import CreateReviewDrawer from "./forms/CreateReviewDrawer";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { GrClose } from "react-icons/gr";
 
