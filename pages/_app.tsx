@@ -6,11 +6,11 @@ import type { AppProps } from "next/app";
 import { useState } from "react";
 import NProgress from "nprogress";
 import Router from "next/router";
-import Navbar from "../components/layout/Navbar";
 
 import "../styles/globals.css";
 import "nprogress/nprogress.css";
 import "react-toastify/dist/ReactToastify.css";
+import Navbar from "../components/layout/Navbar";
 
 Router.events.on("routeChangeStart", () => NProgress.configure({ showSpinner: false }).start());
 Router.events.on("routeChangeComplete", () => NProgress.configure({ showSpinner: false }).done());

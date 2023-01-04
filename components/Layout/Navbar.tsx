@@ -1,21 +1,22 @@
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { RiLoginCircleFill } from "react-icons/ri";
-import { emailToUsername } from "../../utils/helper-functions";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { AiFillHome } from "react-icons/ai";
-import { useState } from "react";
-import { GrClose } from "react-icons/gr";
-import { toast } from "react-toastify";
-import Router from "next/router";
 import Link from "next/link";
-import CreateReviewDrawer from "../forms/CreateReviewDrawer";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { AiFillHome } from "react-icons/ai";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { toast } from "react-toastify";
 import { useUserRole } from "../../context/RoleContext";
+import { emailToUsername } from "../../utils/helper-functions";
+import { RiLoginCircleFill } from "react-icons/ri";
+import CreateReviewDrawer from "../forms/CreateReviewDrawer";
+import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
+import { GrClose } from "react-icons/gr";
 
-const Navbar:React.FC = () => {
+const Navbar: React.FC = () => {
   const supabase = useSupabaseClient();
   const role = useUserRole();
   const user = useUser();
+  const router = useRouter();
 
   const [navDrawerOpen, setNavDrawerOpen] = useState<boolean>(false);
   const toggleNavDrawer = () => setNavDrawerOpen((prev) => !prev);
@@ -35,7 +36,7 @@ const Navbar:React.FC = () => {
     const { error } = await supabase.auth.signOut();
     if (error) toast.error(error.message);
     if (!error) toast.success("Logout Success");
-    Router.push("/auth");
+    router.push("/auth");
   };
 
   const username = emailToUsername(user?.email);
