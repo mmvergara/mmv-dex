@@ -1,47 +1,28 @@
-import { DatabaseTypes, peer_review_evaluation } from "../../../types/db/db-types";
+import { DatabaseTypes, peer_review_evaluation, peer_review_formik } from "../../../types/db/db-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
 import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { peerReviewValidation, validation } from "../../../utils/models-validators";
-import { usernameToEmail } from "../../../utils/helper-functions";
+import { checkAuthOnServer, peer_review_formik_to_peer_review_evaluation, usernameToEmail } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
-  const { body } = req;
+  const body = req.body as peer_review_formik;
   try {
     // Check method
     if (!allowedMethod(req, "PUT")) throw newError("Method not allowed", 405);
 
+
     // Validate New Peer Review Request body
     let { isValid } = await validation(peerReviewValidation, body);
     if (!isValid) throw newError("Invalid Request", 400);
+    
 
-    const peer_review_evaluation: peer_review_evaluation = {
-      name: body.name,
-      date: new Date().toUTCString(),
-      required_rating: {
-        presentation_score: { score: body.presentation_rating_score, comment: body.presentation_rating_comment },
-        technical_score: { score: body.technical_rating_score, comment: body.technical_rating_comment },
-        assists_peers_score: {
-          score: body.assists_peers_rating_score,
-          comment: body.assists_peers_rating_comment,
-        },
-        documentation_score: {
-          score: body.documentation_rating_score,
-          comment: body.assists_peers_rating_comment,
-        },
-      },
-      optional_rating: {
-        stood_out: body.optional_rating_stood_out,
-      },
-    };
+    const peer_review_evaluation: peer_review_evaluation = peer_review_formik_to_peer_review_evaluation(req.body);
 
     // Check auth and get userId
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
+    const user = await checkAuthOnServer(supabase)
 
     // Check if reviewee exists
     const { data: reviewee, error } = await supabase

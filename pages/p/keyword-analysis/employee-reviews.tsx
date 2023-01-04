@@ -19,7 +19,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const pattern = searchQuery.split(",").join("|");
 
-  const fetchPostDescriptions = async (supabase: SupabaseClient<DatabaseTypes>) => {
+  const fetchEmployeeReviews = async (supabase: SupabaseClient<DatabaseTypes>) => {
     if (pattern.length === 0) return;
     return (await supabase.rpc("employee_review_keyword_analysis", {
       pattern,
@@ -29,7 +29,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
   const handleSearchSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    const res = await fetchPostDescriptions(supabase);
+    const res = await fetchEmployeeReviews(supabase);
     if (!res) return setIsLoading(false);
 
     const { data, error } = res;
@@ -43,9 +43,6 @@ const EmployeeReviewsAnalysis: React.FC = () => {
     <>
       <Head>
         <title>Dex | Keyword Analysis - Employee Peer Reviews</title>
-        <meta name='description' content='find users by searching their username' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
       </Head>
       <section>
         <form className='w-[100%] max-w-[600px] mx-auto mt-8' onSubmit={handleSearchSubmit}>

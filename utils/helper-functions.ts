@@ -1,6 +1,13 @@
+import { SupabaseClient, SupabaseClientOptions } from "@supabase/supabase-js";
 import { FormikState } from "formik";
 import { supabaseClient } from "../supabase/clientz";
-import { peer_reviews, peer_review_required_ratings } from "../types/db/db-types";
+import {
+  DatabaseTypes,
+  peer_reviews,
+  peer_review_evaluation,
+  peer_review_formik,
+  peer_review_required_ratings,
+} from "../types/db/db-types";
 
 export const classNameJoin = (...classes: string[]) => classes.filter(Boolean).join(" ");
 
@@ -9,6 +16,45 @@ export const emailToUsername = (email: string | any) =>
 
 export const usernameToEmail = (username: string | any) =>
   username && typeof username === "string" ? `${username}@dexlocalhost.com` : "";
+
+export const peer_review_formik_to_peer_review_evaluation = (
+  peerReviewFormik: peer_review_formik
+): peer_review_evaluation => {
+  const peerReviewEvaluation: peer_review_evaluation = {
+    name: peerReviewFormik.name,
+    date: new Date().toUTCString(),
+    required_rating: {
+      presentation_score: {
+        score: peerReviewFormik.presentation_rating_score,
+        comment: peerReviewFormik.presentation_rating_comment,
+      },
+      technical_score: {
+        score: peerReviewFormik.technical_rating_score,
+        comment: peerReviewFormik.technical_rating_comment,
+      },
+      assists_peers_score: {
+        score: peerReviewFormik.assists_peers_rating_score,
+        comment: peerReviewFormik.assists_peers_rating_comment,
+      },
+      documentation_score: {
+        score: peerReviewFormik.documentation_rating_score,
+        comment: peerReviewFormik.documentation_rating_comment,
+      },
+    },
+    optional_rating: {
+      stood_out: peerReviewFormik.optional_rating_stood_out,
+    },
+  };
+  return peerReviewEvaluation;
+};
+
+export const checkAuthOnServer = async (supabase: SupabaseClient<DatabaseTypes>) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
+  return user
+};
 
 export const getImagePublicUrl = (image_path: string, bucketName: string) => {
   const { data } = supabaseClient.storage.from(bucketName).getPublicUrl(image_path);

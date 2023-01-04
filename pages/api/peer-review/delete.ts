@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { DatabaseTypes } from "../../../types/db/db-types";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
+import { checkAuthOnServer } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
@@ -11,18 +12,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Check method
     if (!allowedMethod(req, "DELETE")) throw newError("Method not allowed", 405);
 
-    // Check if user is admin
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
-
+    // Check auth and get userId
+    const user = await checkAuthOnServer(supabase)
     const { data: profile, error: profileErr } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
     if (profileErr) throw newError(profileErr.message || "Error occured", 500);
+    
+    // Check if user is admin
     if (profile?.role !== "admin") throw newError("You cannot delete peer reviews", 401);
 
     // Delete Peer review

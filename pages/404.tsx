@@ -7,7 +7,7 @@ const PageNotFound: React.FC = () => {
     <>
       <Head>
         <title>Dex | 404 Page not found </title>
-        <meta name='description' content='Create new peer review' />
+        <meta name='description' content='404 Not Found Page' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>

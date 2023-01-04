@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { DatabaseTypes } from "../../../types/db/db-types";
+import { checkAuthOnServer } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
@@ -10,11 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!post_id) throw newError("post_id is required", 409);
     if (!allowedMethod(req, "DELETE")) throw newError("Method not allowed", 405);
 
-    // Check auth
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
+    // Check auth and get userId
+    await checkAuthOnServer(supabase);
 
     // Fetch post
     const { data: post, error: postErr } = await supabase.from("posts").select("*").eq("id", post_id).maybeSingle();
@@ -26,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Delete post (DB Function automatically deletes the image)
     const { error: postDelErr } = await supabase.from("posts").delete().eq("id", post_id);
     if (postDelErr) throw newError("Could not delete post" + postDelErr.message, 400);
-
 
     res.status(200).send({ data: { message: "Post deleted successfully" }, error: null });
   } catch (e) {

@@ -28,3 +28,5 @@ export const axiosErrorParse = (err: unknown) => {
   const message = error.response?.data?.error?.message || error.message;
   return { error: { message } };
 };
+
+

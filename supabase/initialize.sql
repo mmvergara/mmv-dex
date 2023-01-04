@@ -1,5 +1,3 @@
--- go to  Authentication > Providers > Email > Disable Confirm Email
-
 -- PROFILES TABLE
 create table profiles (
   id uuid references auth.users on delete cascade not null primary key,
@@ -159,7 +157,6 @@ returns setof peer_reviews  as $$
   FROM peer_reviews
   WHERE evaluation::text ~* pattern;
 $$ language sql;
-
 
 
 create or replace function public.delete_post_image() 

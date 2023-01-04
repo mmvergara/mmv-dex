@@ -16,11 +16,9 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-    { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
-  );
+  const supabaseClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_ANON_KEY") ?? "", {
+    global: { headers: { Authorization: req.headers.get("Authorization")! } },
+  });
 
   try {
     // Check auth and get userId
@@ -66,9 +64,6 @@ serve(async (req) => {
     if (imgError) throw new Error("Error upload image");
 
     // Get Image Public Url
-    const { data: imgPublicUrl } = supabaseClient.storage
-      .from("post-images")
-      .getPublicUrl(imgData?.path!);
 
     // Insert Post
     const { error } = await supabaseClient.from("posts").insert({
@@ -76,7 +71,7 @@ serve(async (req) => {
       description,
       title,
       img_is_compressed,
-      image_url: imgPublicUrl.publicUrl,
+      image_path: imgData?.path,
     });
 
     if (error) throw new Error(error.message || "Error submitting post");
@@ -86,6 +81,7 @@ serve(async (req) => {
       status: 200,
     });
   } catch (err) {
+    console.log(err);
     const error = err as Error;
     return new Response(JSON.stringify({ data: null, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -49,9 +49,8 @@ export async function validation<T = Record<string, any>>(scheme: yup.SchemaOf<T
   }
 }
 
-
 // import { File as formidableFile } from "formidable";
-                                  // file is temporarily typed as any Formidable having issues with nextjs
+// file is temporarily typed as any Formidable having issues with nextjs
 export const formidableFileValidation = (file: any, allowedFileTypes: string[]) => {
   let error: { message: string } | null = null;
   let message = "";
@@ -66,6 +65,7 @@ export const formidableFileValidation = (file: any, allowedFileTypes: string[]) 
       message += "Invalid file type";
     }
   }
+
   // Max 10MB
   // Client feedback shows 8MB making extra room for the server side image processing
   if (file.size > 8_000_000) message += "File exceeds maximum size (8MB)";

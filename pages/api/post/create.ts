@@ -7,6 +7,7 @@ import allowedMethod, { apiError, newError } from "../../../utils/error-handling
 import { DatabaseTypes } from "../../../types/db/db-types";
 import uniqid from "uniqid";
 import sharp from "sharp";
+import { checkAuthOnServer } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
@@ -22,10 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (err) throw newError("Error parsing request", 500);
 
         // Check auth and get userId
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
+        const user = await checkAuthOnServer(supabase);
 
         // Parse Form Data
         type postFormDataFields = {

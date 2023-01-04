@@ -9,6 +9,7 @@ import useSnowFlakeLoading from "../../../../utils/useSnowFlakeLoading";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { emailToUsername, usernameToEmail } from "../../../../utils/helper-functions";
+import Head from "next/head";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient(ctx);
@@ -60,6 +61,9 @@ function UserPeerReviews({ reviewee }: InferGetServerSidePropsType<typeof getSer
 
   return (
     <>
+      <Head>
+        <title>Dex | User Peer Reviews</title>
+      </Head>
       <h1 className='text-center mt-8 mb-4 font-Poppins font-semibold text-2xl'>
         @{emailToUsername(reviewee.email)} | Peer Reviews
       </h1>

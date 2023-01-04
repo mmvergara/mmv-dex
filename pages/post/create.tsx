@@ -60,15 +60,15 @@ const CreatePost: React.FC = () => {
         if (error) throw new Error(error.message);
       }
       if (uploadServer === "vercel") await axios.put("/api/post/create", formData);
+      formik.resetForm();
+      setImage(null);
+      toast.success("Post Uploaded");
     } catch (e) {
       // Axios Error Parse also works on normal throw new Error()
       const { error } = axiosErrorParse(e);
       toast.error(error.message);
     } finally {
-      setImage(null);
       setIsLoading(false);
-      formik.resetForm();
-      toast.success("Post Uploaded");
     }
   };
 
@@ -94,18 +94,15 @@ const CreatePost: React.FC = () => {
 
   const clickUploadHandler = () => postImageInputRef.current.click();
   const postImageInputRef = useRef<HTMLInputElement>(null!);
-  const postTitleInputRef = useRef<HTMLInputElement>(null!);
   const titleError = formik.touched.title && formik.errors.title;
   const descriptionError = formik.touched.description && formik.errors.description;
 
-  useEffect(() => {
-    postTitleInputRef.current.focus();
-  }, []);
+
   return (
     <>
       <Head>
         <title>Dex | Create new post</title>
-        <meta name='description' content={`New post form`} />
+        <meta name='description' content='Create Post' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
@@ -126,7 +123,6 @@ const CreatePost: React.FC = () => {
           placeholder='Title'
           id='title'
           name='title'
-          ref={postTitleInputRef}
           value={formik.values.title}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
