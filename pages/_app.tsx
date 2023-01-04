@@ -7,6 +7,7 @@ import { useState } from "react";
 import NProgress from "nprogress";
 import Router from "next/router";
 import Navbar from "../components/layout/Navbar";
+
 import "../styles/globals.css";
 import "nprogress/nprogress.css";
 import "react-toastify/dist/ReactToastify.css";

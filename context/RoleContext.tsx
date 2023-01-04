@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 type role = "user" | "admin" | null;
 export const RoleContext = createContext<role>(null);
-export const RoleContextProvider = (props: JSX.Element) => {
+export const RoleContextProvider = (props:any) => {
   const supabase = useSupabaseClient<DatabaseTypes>();
   const user = useUser();
   const [role, setRole] = useState<role>(null);
