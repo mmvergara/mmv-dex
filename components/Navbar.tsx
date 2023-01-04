@@ -3,14 +3,20 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
 import { emailToUsername } from "../utils/helper-functions";
 import { GiHamburgerMenu } from "react-icons/gi";
+import {FaRegPlusSquare} from 'react-icons/fa'
+import { TbUserSearch } from "react-icons/tb";
 import { useUserRole } from "../context/RoleContext";
+import { IoIosCreate } from "react-icons/io";
 import { AiFillHome } from "react-icons/ai";
+import { GoSignOut } from "react-icons/go";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
 const CreateReviewDrawer = dynamic(() => import("./forms/CreateReviewDrawer"));
 
 const Navbar: React.FC = () => {
@@ -85,24 +91,30 @@ const Navbar: React.FC = () => {
               </DrawerHeader>
               <DrawerBody>
                 <ul onClick={toggleNavDrawer} className='flex flex-col font-Poppins font-semibold'>
-                  <Link href={`/profile/${username}`} className='navLink py-4 '>
+                  <Link href={`/profile/${username}`} className='navLink py-4 flex items-center gap-2'>
+                    <CgProfile/>
                     My Profile
                   </Link>
                   {role === "admin" && (
-                    <Link href={`/p/dashboard`} className='navLink py-4 '>
+                    <Link href={`/p/dashboard`} className='navLink py-4 flex items-center gap-2'>
+                      <MdOutlineAdminPanelSettings/>
                       Admin Dashboard
                     </Link>
                   )}
-                  <Link href='/post/create' className='navLink py-4 '>
+                  <Link href='/post/create' className='navLink py-4 flex items-center gap-2'>
+                    <FaRegPlusSquare />
                     Create Post
                   </Link>
-                  <a onClick={toggleCreateReviewDrawer} className='navLink py-4 '>
+                  <a onClick={toggleCreateReviewDrawer} className='navLink py-4 flex items-center gap-2'>
+                    <IoIosCreate />
                     Create Review
                   </a>
-                  <Link href='/search-users' className='navLink py-4 '>
+                  <Link href='/search-users' className='navLink py-4 flex items-center gap-2'>
+                    <TbUserSearch />
                     Search Users
                   </Link>
-                  <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
+                  <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400 flex items-center gap-2'>
+                    <GoSignOut />
                     Logout
                   </span>
                 </ul>

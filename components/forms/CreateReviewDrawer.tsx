@@ -40,7 +40,7 @@ const CreateReviewDrawer: React.FC<props> = ({ isOpen, closeAllDrawers, toggleCr
         .from("profiles")
         .select("id,email")
         .like("email", `${username}%`)
-        .limit(15)
+        .limit(10)
         .abortSignal(signal);
       if (error) {
         // Ignore error if the error is a "Aborted request"
