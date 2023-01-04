@@ -12,7 +12,7 @@ import Link from "next/link";
 import CreateReviewDrawer from "../forms/CreateReviewDrawer";
 import { useUserRole } from "../../context/RoleContext";
 
-const Navbar = () => {
+const Navbar:React.FC = () => {
   const supabase = useSupabaseClient();
   const role = useUserRole();
   const user = useUser();
