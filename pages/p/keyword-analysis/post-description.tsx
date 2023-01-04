@@ -51,7 +51,7 @@ const PostDescriptionAnalysis: React.FC = () => {
                 type='text'
                 placeholder='keyword | ex. addidas'
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target?.value)}
+                onChange={(e) => setSearchQuery(e.target?.value.trim())}
               />
               <button className='formButton w-auto flex gap-2 justify-center items-center'>
                 <span className='text-xl flex'>
