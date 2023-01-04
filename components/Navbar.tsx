@@ -3,7 +3,7 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { RiLoginCircleFill } from "react-icons/ri";
 import { emailToUsername } from "../utils/helper-functions";
 import { GiHamburgerMenu } from "react-icons/gi";
-import {FaRegPlusSquare} from 'react-icons/fa'
+import { FaRegPlusSquare } from "react-icons/fa";
 import { TbUserSearch } from "react-icons/tb";
 import { useUserRole } from "../context/RoleContext";
 import { IoIosCreate } from "react-icons/io";
@@ -75,11 +75,13 @@ const Navbar: React.FC = () => {
       </span>
       {user && (
         <>
-          <CreateReviewDrawer
-            isOpen={createReviewDrawerOpen}
-            toggleCreateReviewDrawer={toggleCreateReviewDrawer}
-            closeAllDrawers={closeAllDrawers}
-          />
+          {createReviewDrawerOpen && (
+            <CreateReviewDrawer
+              isOpen={createReviewDrawerOpen}
+              toggleCreateReviewDrawer={toggleCreateReviewDrawer}
+              closeAllDrawers={closeAllDrawers}
+            />
+          )}
           <Drawer isOpen={navDrawerOpen} placement='right' size='sm' onClose={toggleNavDrawer}>
             <DrawerOverlay onClick={toggleNavDrawer} />
             <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
@@ -92,12 +94,12 @@ const Navbar: React.FC = () => {
               <DrawerBody>
                 <ul onClick={toggleNavDrawer} className='flex flex-col font-Poppins font-semibold'>
                   <Link href={`/profile/${username}`} className='navLink py-4 flex items-center gap-2'>
-                    <CgProfile/>
+                    <CgProfile />
                     My Profile
                   </Link>
                   {role === "admin" && (
                     <Link href={`/p/dashboard`} className='navLink py-4 flex items-center gap-2'>
-                      <MdOutlineAdminPanelSettings/>
+                      <MdOutlineAdminPanelSettings />
                       Admin Dashboard
                     </Link>
                   )}
