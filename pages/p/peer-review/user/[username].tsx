@@ -1,5 +1,4 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { checkIfUserIsAdminById, getServerSideSupabaseClientSession } from "../../../../supabase/services/auth-service";
 import { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { DatabaseTypes } from "../../../../types/db/db-types";

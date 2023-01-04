@@ -11,10 +11,10 @@ import Head from "next/head";
 import Link from "next/link";
 import { DatabaseTypes } from "../types/db/db-types";
 
-export const getServerSideProps: GetServerSideProps<any> = async (context: GetServerSidePropsContext) => {
-  context.res.setHeader("Cache-Control", "public, s-maxage=15, stale-while-revalidate=59");
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
-  const pageNumber = Number(context.query?.page) || 1;
+export const getServerSideProps: GetServerSideProps<any> = async (ctx: GetServerSidePropsContext) => {
+  ctx.res.setHeader("Cache-Control", "public, s-maxage=15, stale-while-revalidate=59");
+  const supabase = createServerSupabaseClient<DatabaseTypes>(ctx);
+  const pageNumber = Number(ctx.query?.page) || 1;
   const postsPerPage = 8;
 
   const { from, to } = getPagination(pageNumber, postsPerPage);

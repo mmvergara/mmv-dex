@@ -13,11 +13,7 @@ import { authValidationSchema } from "../utils/models-validators";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { session } = await getServerSideSupabaseClientSession(ctx);
-  if (session)
-    return {
-      destination: "/",
-      permanent: false,
-    };
+  if (session) return { notFound: true };
   return { props: {} };
 };
 
