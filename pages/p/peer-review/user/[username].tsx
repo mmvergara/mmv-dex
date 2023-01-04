@@ -12,6 +12,7 @@ import { emailToUsername, usernameToEmail } from "../../../../utils/helper-funct
 import Head from "next/head";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  ctx.res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient(ctx);
   const email = usernameToEmail(ctx.query?.username) || "";
 

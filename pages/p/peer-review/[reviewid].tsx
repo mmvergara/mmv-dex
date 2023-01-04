@@ -10,6 +10,7 @@ import Head from "next/head";
 import { emailToUsername } from "../../../utils/helper-functions";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  ctx.res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient(ctx);
   const reviewid = ctx.query?.reviewid || "";
 

@@ -12,6 +12,7 @@ import Link from "next/link";
 import { DatabaseTypes } from "../types/db/db-types";
 
 export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (context: GetServerSidePropsContext) => {
+  context.res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   const pageNumber = Number(context.query?.page) || 1;
   const postsPerPage = 8;

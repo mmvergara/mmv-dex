@@ -14,6 +14,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  context.res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   const postid = String(context.params?.postid) || "";
   const props = await getPostById(supabase, postid);
