@@ -1,8 +1,10 @@
-import { classNameJoin, emailToUsername, getImagePublicUrl } from "../../utils/helper-functions";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { classNameJoin, emailToUsername, getImagePublicUrl } from "../../utils/helper-functions";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { MdOutlineRateReview } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
+import { DatabaseTypes } from "../../types/db/db-types";
 import { useUserRole } from "../../context/RoleContext";
 import { getPostById } from "../../supabase/services/posts-service";
 import { toast } from "react-toastify";
@@ -10,8 +12,6 @@ import DeletePostButton from "../../components/post/DeletePostButton";
 import Image from "next/image";
 import Head from "next/head";
 import Link from "next/link";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { DatabaseTypes } from "../../types/db/db-types";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient<DatabaseTypes>(context);

@@ -104,20 +104,6 @@ export interface Database {
           inserted_at?: string
         }
       }
-      test: {
-        Row: {
-          id: number
-          data: Json | null
-        }
-        Insert: {
-          id?: number
-          data?: Json | null
-        }
-        Update: {
-          id?: number
-          data?: Json | null
-        }
-      }
     }
     Views: {
       [_ in never]: never

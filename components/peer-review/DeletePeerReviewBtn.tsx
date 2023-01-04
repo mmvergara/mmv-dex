@@ -1,9 +1,9 @@
-import axios from "axios";
-import { useRouter } from "next/router";
-import { BsTrashFill } from "react-icons/bs";
-import { toast } from "react-toastify";
 import { axiosErrorParse } from "../../utils/error-handling";
+import { BsTrashFill } from "react-icons/bs";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import useSnowFlakeLoading from "../../utils/useSnowFlakeLoading";
+import axios from "axios";
 
 const DeletePeerReviewBtn: React.FC<{ reviewid: string | number }> = ({ reviewid }) => {
   const { SnowFlakeLoading, isLoading, setIsLoading } = useSnowFlakeLoading();
@@ -12,8 +12,8 @@ const DeletePeerReviewBtn: React.FC<{ reviewid: string | number }> = ({ reviewid
     setIsLoading(true);
     try {
       await axios.delete("/api/peer-review/delete?reviewid=" + reviewid);
-      router.push("/search-users");
-      toast.error("Review deleted");
+      toast.success("Review deleted");
+      router.back();
     } catch (e) {
       const { error } = axiosErrorParse(e);
       toast.error(error.message);
