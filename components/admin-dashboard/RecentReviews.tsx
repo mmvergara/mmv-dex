@@ -20,7 +20,7 @@ const RecentReviews: React.FC<props> = ({ setIsLoading }) => {
     const { data, error, count } = await supabase
       .from("peer_reviews")
       .select("*", { count: "exact" })
-      .order("inserted_at", { ascending: true })
+      .order("inserted_at", { ascending: false })
       .range(reviews.length, reviews.length + 4);
 
     if (error) {
