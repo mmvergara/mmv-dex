@@ -60,6 +60,7 @@ serve(async (req) => {
       .upload(imageName, imageBuffer, {
         upsert: false,
         contentType: "image/png",
+        cacheControl: "3600"
       });
     if (imgError) throw new Error("Error upload image");
 

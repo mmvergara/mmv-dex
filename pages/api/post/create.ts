@@ -63,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           .upload(imageName, imgBuffer, {
             upsert: false,
             contentType: "image/png",
+            cacheControl: "3600",
           });
         if (imgError) throw newError(imgError.message, 409);
         if (!imgData) throw newError("Error uploading image", 409);
