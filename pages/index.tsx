@@ -11,7 +11,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { DatabaseTypes } from "../types/db/db-types";
 
-export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps<any> = async (context: GetServerSidePropsContext) => {
   context.res.setHeader("Cache-Control", "public, s-maxage=15, stale-while-revalidate=59");
   const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   const pageNumber = Number(context.query?.page) || 1;
@@ -49,7 +49,7 @@ export default function Home(props: InferGetServerSidePropsType<typeof getServer
               <h4 className='text-6xl text-center mx-auto'>No post's 🤯 </h4>
             ) : (
               <div className='grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8'>
-                {posts.map((post) => {
+                {posts.map((post:any) => {
                   if (!(!Array.isArray(post.profiles) && post.profiles?.email)) return;
                   return (
                     <PostCard
