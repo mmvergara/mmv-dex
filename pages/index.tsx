@@ -28,7 +28,7 @@ export default function Home(props: InferGetServerSidePropsType<typeof getServer
   const { data: posts, error, hasMore } = props;
   const router = useRouter();
   const currentPage = Number(router.query?.page) || 1;
-
+  
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);
@@ -42,7 +42,7 @@ export default function Home(props: InferGetServerSidePropsType<typeof getServer
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore</h1>
+        <h1 className='text-4xl sm:text-7xl text-center font-Poppins sm:mt-10 mt-8'>Explore {new Date().getSeconds()}</h1>
         <section className='mx-auto max-w-2xl py-8 px-4 sm:py-10 sm:px-6 lg:max-w-7xl lg:px-8 font-Poppins'>
           {posts &&
             (posts.length === 0 ? (
