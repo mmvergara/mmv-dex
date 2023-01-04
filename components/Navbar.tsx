@@ -1,16 +1,17 @@
+import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import Link from "next/link";
+import { RiLoginCircleFill } from "react-icons/ri";
+import { emailToUsername } from "../utils/helper-functions";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { useUserRole } from "../context/RoleContext";
+import { AiFillHome } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { AiFillHome } from "react-icons/ai";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { toast } from "react-toastify";
-import { useUserRole } from "../context/RoleContext";
-import { emailToUsername } from "../utils/helper-functions";
-import { RiLoginCircleFill } from "react-icons/ri";
-import CreateReviewDrawer from "./forms/CreateReviewDrawer";
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay } from "@chakra-ui/modal";
 import { GrClose } from "react-icons/gr";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+const CreateReviewDrawer = dynamic(() => import("./forms/CreateReviewDrawer"));
 
 const Navbar: React.FC = () => {
   const supabase = useSupabaseClient();
