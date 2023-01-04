@@ -21,7 +21,6 @@ begin
 end
 $$;
 
-
 CREATE POLICY "Admin users can do CRUD on profiles" ON "public"."profiles"
 AS PERMISSIVE FOR ALL
 TO authenticated
@@ -41,6 +40,7 @@ begin
   values (new.id, new.email,'user');
   return new;
 end;
+
 $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
@@ -63,7 +63,6 @@ create table posts (
 
   CONSTRAINT description_min_length CHECK (char_length(description) >= 6),
   CONSTRAINT description_max_length CHECK (char_length(description) <= 500)
-
 );
 
 -- Set up row level security on posts table
@@ -148,6 +147,11 @@ FOR SELECT TO anon, authenticated USING (bucket_id = 'post-images');
 CREATE POLICY "Enable authenticated users to upload images 1hys5dx_0" ON storage.objects
 FOR INSERT TO authenticated WITH CHECK (bucket_id = 'post-images' and uid() IS NOT NULL and owner = uid());
 
+CREATE POLICY "service_role users can delete images" ON storage.objects
+FOR DELETE TO service_role USING (bucket_id = 'post-images');
+
+CREATE POLICY "service_role users can insert images 1hys5dx_0" ON storage.objects
+FOR INSERT TO service_role WITH CHECK (bucket_id = 'post-images');
 
 create or replace function public.employee_review_keyword_analysis(pattern text) 
 returns setof peer_reviews  as $$

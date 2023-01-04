@@ -1,6 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getPagination, getPosts, postDetailsQuery } from "../supabase/services/posts-service";
 import { InferGetServerSidePropsType } from "next";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { getImagePublicUrl } from "../utils/helper-functions";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
@@ -8,15 +9,16 @@ import { toast } from "react-toastify";
 import PostCard from "../components/post/PostCard";
 import Head from "next/head";
 import Link from "next/link";
+import { DatabaseTypes } from "../types/db/db-types";
 
 export const getServerSideProps: GetServerSideProps<postDetailsQuery> = async (context: GetServerSidePropsContext) => {
+  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   const pageNumber = Number(context.query?.page) || 1;
   const postsPerPage = 8;
 
   const { from, to } = getPagination(pageNumber, postsPerPage);
-  const { count, data, error } = await getPosts(context, { from, to });
+  const { count, data, error } = await getPosts(supabase, { from, to });
   const hasMore = !!count && count - 1 > to;
-  let countt = 0;
 
   return { props: { data, error, hasMore } };
 };

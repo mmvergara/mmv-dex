@@ -1,9 +1,6 @@
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSidePropsContext } from "next";
 import { posts, profiles } from "../../types/db/db-types";
+import { SupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { DatabaseTypes } from "../../types/db/db-types";
-
-
 
 // getPagination codeby: silentworks https://github.com/supabase/supabase/discussions/1223
 export const getPagination = (page: number, size: number) => {
@@ -13,26 +10,46 @@ export const getPagination = (page: number, size: number) => {
   return { from, to };
 };
 
-export const getPosts = async (context: GetServerSidePropsContext, paginate?: { from: number; to: number }) => {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
+export const getPosts = async (
+  supabase: SupabaseClient<DatabaseTypes>,
+  paginate?: { from: number; to: number },
+  orderAscending: boolean = false
+) => {
   if (paginate) {
     return await supabase
       .from("posts")
       .select("id,title,description,created_at,image_path, profiles( * )", { count: "exact" })
+      .order("created_at", { ascending: orderAscending })
       .range(paginate.from, paginate.to);
   }
-  return await supabase
+  return supabase
     .from("posts")
-    .select("id,title,description,created_at,image_path, profiles( * )", { count: "exact" });
+    .select("id,title,description,created_at,image_path, profiles( * )", { count: "exact" })
+    .order("created_at", { ascending: orderAscending });
 };
 
-export const getPostById = async (context: GetServerSidePropsContext, postid: string) => {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
-  return await supabase.from("posts").select("*,profiles(id,email)").eq("id", postid).maybeSingle();
+export const getReviews = async (
+  supabase: SupabaseClient<DatabaseTypes>,
+  paginate?: { from: number; to: number },
+  orderAscending: boolean = false
+) => {
+  if (paginate) {
+    return await supabase
+      .from("peer_reviews")
+      .select("*", { count: "exact" })
+      .order("inserted_at", { ascending: orderAscending })
+      .range(paginate.from, paginate.to);
+  }
+  return supabase
+    .from("peer_reviews")
+    .select("*", { count: "exact" })
+    .order("inserted_at", { ascending: orderAscending });
 };
 
-export const getUserPostsById = async (context: GetServerSidePropsContext, user_id: string, limit?: number) => {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
+export const getPostById = async (supabase: SupabaseClient<DatabaseTypes>, postid: string) =>
+  await supabase.from("posts").select("*,profiles(id,email)").eq("id", postid).maybeSingle();
+
+export const getUserPostsById = async (supabase: SupabaseClient<DatabaseTypes>, user_id: string, limit?: number) => {
   if (limit) {
     return await supabase
       .from("posts")
@@ -42,8 +59,12 @@ export const getUserPostsById = async (context: GetServerSidePropsContext, user_
   }
   return await supabase.from("posts").select("id,title,description,created_at,image_path").eq("id", user_id);
 };
-export const getUserPostsTitleById = async (context: GetServerSidePropsContext, user_id: string, limit?: number) => {
-  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
+
+export const getUserPostsTitleById = async (
+  supabase: SupabaseClient<DatabaseTypes>,
+  user_id: string,
+  limit?: number
+) => {
   if (limit) {
     return await supabase
       .from("posts")

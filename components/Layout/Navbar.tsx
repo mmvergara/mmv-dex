@@ -10,9 +10,11 @@ import { toast } from "react-toastify";
 import Router from "next/router";
 import Link from "next/link";
 import CreateReviewDrawer from "../forms/CreateReviewDrawer";
+import { useUserRole } from "../../context/RoleContext";
 
 const Navbar = () => {
   const supabase = useSupabaseClient();
+  const role = useUserRole();
   const user = useUser();
 
   const [navDrawerOpen, setNavDrawerOpen] = useState<boolean>(false);
@@ -63,43 +65,50 @@ const Navbar = () => {
           </Link>
         )}
       </span>
-      <CreateReviewDrawer
-        isOpen={createReviewDrawerOpen}
-        toggleCreateReviewDrawer={toggleCreateReviewDrawer}
-        closeAllDrawers={closeAllDrawers}
-      />
-      <Drawer isOpen={navDrawerOpen} placement='right' size='sm' onClose={toggleNavDrawer}>
-        <DrawerOverlay onClick={toggleNavDrawer} />
-        <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
-          <DrawerHeader className='flex justify-between items-center'>
-            <h4 className='font-Poppins p-4'>Hello! {username}</h4>
-            <span onClick={toggleNavDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2'>
-              <GrClose />
-            </span>
-          </DrawerHeader>
-          <DrawerBody>
-            {user && (
-              <ul onClick={toggleNavDrawer} className='flex flex-col font-Poppins font-semibold'>
-                <Link href={`/profile/${username}`} className='navLink py-4 '>
-                  My Profile
-                </Link>
-                <Link href='/post/create' className='navLink py-4 '>
-                  Create Post
-                </Link>
-                <a onClick={toggleCreateReviewDrawer} className='navLink py-4 '>
-                  Create Review
-                </a>
-                <Link href='/search-users' className='navLink py-4 '>
-                  Search Users
-                </Link>
-                <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
-                  Logout
+      {user && (
+        <>
+          <CreateReviewDrawer
+            isOpen={createReviewDrawerOpen}
+            toggleCreateReviewDrawer={toggleCreateReviewDrawer}
+            closeAllDrawers={closeAllDrawers}
+          />
+          <Drawer isOpen={navDrawerOpen} placement='right' size='sm' onClose={toggleNavDrawer}>
+            <DrawerOverlay onClick={toggleNavDrawer} />
+            <DrawerContent className='max-w-[300px] shadow-lg' backgroundColor='whitesmoke'>
+              <DrawerHeader className='flex justify-between items-center'>
+                <h4 className='font-Poppins p-4'>Hello! {username}</h4>
+                <span onClick={toggleNavDrawer} className='navLink hover:bg-rose-500 font-Poppins p-4 m-2'>
+                  <GrClose />
                 </span>
-              </ul>
-            )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+              </DrawerHeader>
+              <DrawerBody>
+                <ul onClick={toggleNavDrawer} className='flex flex-col font-Poppins font-semibold'>
+                  <Link href={`/profile/${username}`} className='navLink py-4 '>
+                    My Profile
+                  </Link>
+                  {role === "admin" && (
+                    <Link href={`/p/dashboard`} className='navLink py-4 '>
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <Link href='/post/create' className='navLink py-4 '>
+                    Create Post
+                  </Link>
+                  <a onClick={toggleCreateReviewDrawer} className='navLink py-4 '>
+                    Create Review
+                  </a>
+                  <Link href='/search-users' className='navLink py-4 '>
+                    Search Users
+                  </Link>
+                  <span onClick={logoutHandler} className='navLink py-4 hover:bg-rose-400'>
+                    Logout
+                  </span>
+                </ul>
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>
+      )}
     </nav>
   );
 };

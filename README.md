@@ -4,10 +4,8 @@ ongoing....
 
 ## To Do:
 
-- server side validation supabase edge function
+- Admin Dashboard UI
 
-- Admin Dashboard
-- postgre function to update api_calls table called_by to null when a user is deleted (NOT POSSIBLE)
 - seo with Head Tags
 
 
@@ -17,7 +15,7 @@ ongoing....
  - no public all policies should have roles
 
 ## Installation
-
+> GO TO DB > Extensions > enable http
 > Initialize supabase Tables,Policies,Buckets
 > Turn off email verification
 > Deploy supabase edge functions

@@ -1,4 +1,4 @@
-import { Database } from "./db-generated-types";
+import { Database, Json } from "./db-generated-types";
 
 export type DatabaseTypes = Database;
 
@@ -7,15 +7,22 @@ export type posts = DBTables["posts"]["Row"];
 export type profiles = DBTables["profiles"]["Row"];
 export type api_calls = DBTables["api_calls"]["Row"];
 
-type peer_review_row = DBTables["peer_reviews"]["Row"];
+type peer_review_row = DBTables["peer_reviews"]["Row"]; 
+
 export type peer_reviews = {
   id: peer_review_row["id"];
-  evaluation: peer_review_evaluation;
+  evaluation: peer_review_evaluation ;
   reviewee: peer_review_row["reviewee"];
   reviewer: peer_review_row["reviewer"];
   inserted_at: peer_review_row["inserted_at"];
 };
 
+export type peer_reviews_no_eval = {
+  id: peer_review_row["id"];
+  reviewee: peer_review_row["reviewee"];
+  reviewer: peer_review_row["reviewer"];
+  inserted_at: peer_review_row["inserted_at"];
+};
 export type peer_review_formik = {
   name: string;
   date: string;

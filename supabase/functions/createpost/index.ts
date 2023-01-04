@@ -38,7 +38,6 @@ serve(async (req) => {
     });
     const { compressed, image, description, title, compressionMethod } = formFields;
 
-    // Validate Form Data
     let imageBuffer = await image.arrayBuffer();
     // Compression Options
     let compressionLevel = 1;
@@ -79,6 +78,7 @@ serve(async (req) => {
       img_is_compressed,
       image_url: imgPublicUrl.publicUrl,
     });
+
     if (error) throw new Error(error.message || "Error submitting post");
 
     return new Response(JSON.stringify({ data: null, error: null }), {

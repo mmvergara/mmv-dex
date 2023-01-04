@@ -9,14 +9,17 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import Head from "next/head";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "../../types/db/db-generated-types";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const email = usernameToEmail(ctx.query?.username) || "";
-  const { data: user, error: userErr } = await getUserProfileByEmail(ctx, email);
+  const supabase = createServerSupabaseClient<Database>(ctx);
+  const { data: user, error: userErr } = await getUserProfileByEmail(supabase, email);
 
   if (!user || userErr) return { notFound: true };
 
-  const { data: posts, error } = await getUserPostsTitleById(ctx, user.id, 5);
+  const { data: posts, error } = await getUserPostsTitleById(supabase, user.id, 5);
   return { props: { user, posts, error } };
 };
 

@@ -10,10 +10,13 @@ import DeletePostButton from "../../components/post/DeletePostButton";
 import Image from "next/image";
 import Head from "next/head";
 import Link from "next/link";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { DatabaseTypes } from "../../types/db/db-types";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const supabase = createServerSupabaseClient<DatabaseTypes>(context);
   const postid = String(context.params?.postid) || "";
-  const props = await getPostById(context, postid);
+  const props = await getPostById(supabase, postid);
   return { props };
 };
 
@@ -23,13 +26,13 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
   const session = useSession();
   const role = useUserRole();
   const user = useUser();
-
+  console.log(role);
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);
 
   if (!post) return <h1 className='text-3xl sm:text-6xl text-center mt-10'>Post not found 😭</h1>;
-  const canDelete = role === "admin" || post.author === user?.id;
+  const isOwnerOrAdmin = role === "admin" || post.author === user?.id;
 
   return (
     <>
@@ -66,7 +69,7 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
           </div>
           {user && (
             <div className='flex mt-8 items-center gap-2 font-Poppins text-white text-center'>
-              {canDelete && <DeletePostButton postId={post.id} />}
+              {isOwnerOrAdmin && <DeletePostButton postId={post.id} />}
               {!Array.isArray(post.profiles) && session?.user.email !== post.profiles?.email && (
                 <Link
                   href={`/peer-review/create?username=${emailToUsername(post.profiles?.email)}`}
