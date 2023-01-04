@@ -62,7 +62,7 @@ const RecentReviews: React.FC<props> = ({ setIsLoading }) => {
             return (
               <>
                 <article className='p-1 px-2 flex justify-between items-center'>
-                  <div>sadasdas</div>
+                  <div>Review ID : {r.id}</div>
                   <Link href={`/p/peer-review/${r.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
                     {<BiLinkAlt />}
                   </Link>

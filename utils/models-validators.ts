@@ -74,4 +74,3 @@ export const formidableFileValidation = (file: any, allowedFileTypes: string[]) 
   return { error };
 };
 
-// by:mmvergara

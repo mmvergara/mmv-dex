@@ -56,7 +56,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
                 type='text'
                 placeholder='seperate using commas  ( , )'
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target?.value.toLowerCase())}
+                onChange={(e) => setSearchQuery(e.target?.value.trim().toLowerCase())}
               />
               <button className='formButton w-auto flex gap-2 justify-center items-center'>
                 <span className='text-xl flex'>

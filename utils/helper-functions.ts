@@ -1,6 +1,6 @@
-import { SupabaseClient, SupabaseClientOptions } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { FormikState } from "formik";
-import { supabaseClient } from "../supabase/clientz";
+import { supabaseClient } from "../supabase/client";
 import {
   DatabaseTypes,
   peer_reviews,
@@ -53,7 +53,7 @@ export const checkAuthOnServer = async (supabase: SupabaseClient<DatabaseTypes>)
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthorized / Session expired, try logging in again.");
-  return user
+  return user;
 };
 
 export const getImagePublicUrl = (image_path: string, bucketName: string) => {
@@ -121,8 +121,6 @@ export const postsKeywordAnalysis = (
   };
 };
 
-export type PostAnalysisResult = ReturnType<typeof postsKeywordAnalysis>;
-
 const countOccurrences = (inputString: string, searchString: string): number => {
   if (searchString.length === 0) return 0;
   let counter = 0;
@@ -146,13 +144,6 @@ const getCommentsFromPR_required_ratings = (required_ratings: peer_review_requir
     })
     .join(" ");
   return comments;
-};
-
-type KeywordsAnalysis = {
-  [key: string]: {
-    keywordOccurrences: number;
-    reviewsContainingKeyword: number;
-  };
 };
 
 export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[] | null, pattern: string) => {
@@ -191,3 +182,10 @@ export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[] | null
 };
 
 export type employeeReviewKeywordAnalysisResults = ReturnType<typeof employeeReviewKeywordAnalysis>;
+export type PostAnalysisResult = ReturnType<typeof postsKeywordAnalysis>;
+type KeywordsAnalysis = {
+  [key: string]: {
+    keywordOccurrences: number;
+    reviewsContainingKeyword: number;
+  };
+};

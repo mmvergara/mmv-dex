@@ -40,7 +40,7 @@ const CreatePost: React.FC = () => {
 
     // Compress client side
     try {
-      if (compressionMethod === "client") imgFile = await imageCompression(image, { maxSizeMB: 5 });
+      if (compressionMethod === "client") imgFile = await imageCompression(image, { maxSizeMB: 10 });
     } catch (error: any) {
       toast.error(error.message || "Error compressing image on client side");
       return setIsLoading(false);

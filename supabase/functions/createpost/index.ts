@@ -63,8 +63,6 @@ serve(async (req) => {
       });
     if (imgError) throw new Error("Error upload image");
 
-    // Get Image Public Url
-
     // Insert Post
     const { error } = await supabaseClient.from("posts").insert({
       author: userId,
@@ -75,7 +73,6 @@ serve(async (req) => {
     });
 
     if (error) throw new Error(error.message || "Error submitting post");
-
     return new Response(JSON.stringify({ data: null, error: null }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
