@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [{ hostname: "gzqicwnrxaguhmzvujut.supabase.co", protocol: "https" }],
+    minimumCacheTTL:60
   },
 };
 
