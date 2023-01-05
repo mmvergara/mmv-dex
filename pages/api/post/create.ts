@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Promisify
   // https://stackoverflow.com/questions/60684227/api-resolved-without-sending-a-response-in-nextjs
-  const result = new Promise((resolved, reject) => {
+  const result = await new Promise((resolved, reject) => {
     form.parse(req, async (err, fields, files) => {
       files.image;
       try {
@@ -88,7 +88,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
   });
-  res.status(201).send({ data: result, error: null });
+  console.log(result);
+  if (result) return res.status(201).send({ data: result, error: null });
 }
 
 export const config = {
