@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           img_is_compressed,
           image_path: imgData.path,
         });
-        if (error) throw newError(error.message, Number(error.code));
+        if (error) throw newError(error.message, 409);
 
         // If there are no error, record api_call details to supabase
         await recordNextJsApiCall(req, supabase, user.id);

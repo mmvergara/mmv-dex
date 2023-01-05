@@ -56,8 +56,8 @@ create table posts (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
-  CONSTRAINT title_min_length CHECK (char_length(title) >= 6),
-  CONSTRAINT title_max_length CHECK (char_length(title) <= 50),
+  CONSTRAINT title_min_length CHECK (char_length(title) >= 7),
+  CONSTRAINT title_max_length CHECK (char_length(title) <= 51),
 
   CONSTRAINT description_min_length CHECK (char_length(description) >= 6),
   CONSTRAINT description_max_length CHECK (char_length(description) <= 500)
