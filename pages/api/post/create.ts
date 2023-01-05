@@ -81,8 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // If there are no error, record api_call details to supabase
         await recordNextJsApiCall(req, supabase, user.id);
 
-        res.status(201).send({ data: { compressed, title, description }, error: null });
-        resolved(null);
+        resolved(res.status(201).send({ data: { compressed, title, description }, error: null }));
       } catch (e) {
         const { code, errData } = apiError(e);
         res.status(code || 500).send(errData);
