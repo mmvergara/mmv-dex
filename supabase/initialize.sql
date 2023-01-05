@@ -38,8 +38,8 @@ begin
   values (new.id, new.email,'user');
   return new;
 end;
-
 $$ language plpgsql security definer;
+
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
@@ -159,11 +159,18 @@ returns setof peer_reviews  as $$
 $$ language sql;
 
 
+
+--------#################
+--------#################
+--------#################
+--------#################
+--------#################
+
 create or replace function public.delete_post_image() 
 returns trigger as $$
 declare
-  myurl varchar := 'https://gzqicwnrxaguhmzvujut.supabase.co';
-  service_role_key varchar := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6cWljd25yeGFndWhtenZ1anV0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Mjc0NTA2MCwiZXhwIjoxOTg4MzIxMDYwfQ.LwAN_9lVaJV6ZtI7T51iUIwb3tLTUn914gsPzuuJTNQ';
+  myurl varchar := '{YOUR SUPABASE PROJECT URL HERE}';
+  service_role_key varchar := '{YOUR SERVICE ROLE KEY HERE}';
   url varchar := myurl||'/storage/v1/object/'||'post-images'||'/'||old.image_path;
 begin
 perform (select status FROM http((

@@ -1,13 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { validation, formidableFileValidation, postValidationSchema } from "../../../utils/models-validators";
+import type { NextApiRequest, NextApiResponse } from "next";
+import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import formidable, { Formidable } from "formidable";
 import { recordNextJsApiCall } from "../../../utils/record-api-call";
-import allowedMethod, { apiError, newError } from "../../../utils/error-handling";
+import { checkAuthOnServer } from "../../../utils/helper-functions";
 import { DatabaseTypes } from "../../../types/db/db-types";
 import uniqid from "uniqid";
 import sharp from "sharp";
-import { checkAuthOnServer } from "../../../utils/helper-functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
