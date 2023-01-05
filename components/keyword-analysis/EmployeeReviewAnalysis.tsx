@@ -23,16 +23,16 @@ const EmployeeReviewsKeywordAnalysisResults: React.FC<Props> = ({ analysis, isLo
               <article className='my-2 border-2 p-2 rounded-md'>
                 <p className='text-lg flex justify-between items-center'>
                   <span>
-                    Total times <b>"{keyword}"</b> appeared in peer reviews comments:
+                    Total times <b>"{keyword}"</b> appeared in peer review comments:
                   </span>
-                  <span className='bg-slate-300 p-2 rounded-lg'>{keywordOccurrences}</span>
+                  <span className='bg-slate-300 p-2 rounded-lg'>{reviewsContainingKeyword}</span>
                 </p>
                 <hr className='border-1 my-2' />
                 <p className='text-lg flex justify-between items-center'>
                   <span>
-                    Total occurence of <b>"{keyword}"</b> in peer reviews comments:
+                    Total occurence of <b>"{keyword}"</b> in peer review comments:
                   </span>
-                  <span className='bg-slate-300 p-2 rounded-lg'>{reviewsContainingKeyword}</span>
+                  <span className='bg-slate-300 p-2 rounded-lg'>{keywordOccurrences}</span>
                 </p>
               </article>
             </article>

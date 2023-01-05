@@ -46,7 +46,6 @@ const RecentPosts: React.FC<props> = ({ setIsLoading }) => {
   };
 
   useEffect(() => {
-    console.log("USE EFFECT");
     fetchPosts();
   }, []);
   return (
@@ -63,7 +62,7 @@ const RecentPosts: React.FC<props> = ({ setIsLoading }) => {
                     {!Array.isArray(p.profiles) && (
                       <span className='mr-2 '>@{emailToUsername(p.profiles?.email)} |</span>
                     )}
-                    <span>{limitStringToNLength(p.title, 15)}</span>
+                    <span>{limitStringToNLength(p.title, 30)}</span>
                   </div>
                   <Link href={`/post/${p.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
                     {<BiLinkAlt />}

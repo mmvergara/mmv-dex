@@ -79,7 +79,6 @@ serve(async (req) => {
       status: 200,
     });
   } catch (err) {
-    console.log(err);
     const error = err as Error;
     return new Response(JSON.stringify({ data: null, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

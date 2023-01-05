@@ -15,7 +15,6 @@ export const RoleContextProvider = (props:any) => {
         setRole(null);
         return;
       }
-      console.log("AUTH CONTEXT USE EEFFECT");
       const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
       if (error) {
         toast.error(error.message);

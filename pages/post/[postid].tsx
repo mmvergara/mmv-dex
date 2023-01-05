@@ -27,7 +27,6 @@ export default function Post(props: InferGetServerSidePropsType<typeof getServer
   const session = useSession();
   const role = useUserRole();
   const user = useUser();
-  console.log(role);
   useEffect(() => {
     if (error) toast.error(error.message);
   }, []);

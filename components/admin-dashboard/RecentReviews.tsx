@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DatabaseTypes,  peer_reviews_no_eval } from "../../types/db/db-types";
+import { DatabaseTypes, peer_reviews_no_eval } from "../../types/db/db-types";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { BiLinkAlt } from "react-icons/bi";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { DateSchema } from "yup";
 
 type props = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
@@ -48,7 +49,6 @@ const RecentReviews: React.FC<props> = ({ setIsLoading }) => {
     }
     setIsLoading(false);
   };
-  console.log({ reviews });
   useEffect(() => {
     fetchReviews();
   }, []);
@@ -62,7 +62,10 @@ const RecentReviews: React.FC<props> = ({ setIsLoading }) => {
             return (
               <>
                 <article className='p-1 px-2 flex justify-between items-center'>
-                  <div>Review ID : {r.id}</div>
+                  <div>
+                    <p className="font-semibold">Review ID : {r.id}</p>
+                    <div>{new Date(r.inserted_at).toLocaleDateString()}</div>
+                  </div>
                   <Link href={`/p/peer-review/${r.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
                     {<BiLinkAlt />}
                   </Link>
