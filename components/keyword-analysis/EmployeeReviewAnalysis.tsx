@@ -5,16 +5,17 @@ import * as React from "react";
 type Props = {
   analysis: employeeReviewKeywordAnalysisResults;
   isLoading: boolean;
+  pattern: string;
 };
 
-const EmployeeReviewsKeywordAnalysisResults: React.FC<Props> = ({ analysis, isLoading }) => {
+const EmployeeReviewsKeywordAnalysisResults: React.FC<Props> = ({ analysis, isLoading, pattern }) => {
   if (!analysis || analysis?.length === 0) return <></>;
 
   return (
     <div className={`fontPoppins flex flex-col gap-2 p-4 mt-4 bg-slate-100 rounded-md ${isLoading && "opacity-20"}`}>
       {!isLoading &&
         analysis.map(([keyword, { reviewsContainingKeyword, keywordOccurrences }]) => {
-          if (keyword.length === 0) return <></>;
+          if (keyword.length === 0) return <div key={uniqid()}></div>;
           return (
             <article key={uniqid()}>
               <h3 className='text-2xl'>

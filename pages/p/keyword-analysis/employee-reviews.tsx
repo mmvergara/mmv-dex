@@ -1,10 +1,9 @@
-import { SupabaseClient, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { employeeReviewKeywordAnalysis } from "../../../utils/helper-functions";
 import { DatabaseTypes, peer_reviews } from "../../../types/db/db-types";
-import type { SyntheticEvent } from "react";
-import { IoMdRefreshCircle } from "react-icons/io";
+import {  useSupabaseClient } from "@supabase/auth-helpers-react";
 import { PostgrestResponse } from "@supabase/supabase-js";
 import { HiSearchCircle } from "react-icons/hi";
+import {  useEffect } from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import EmployeeReviewsKeywordAnalysisResults from "../../../components/keyword-analysis/EmployeeReviewAnalysis";
@@ -19,24 +18,36 @@ const EmployeeReviewsAnalysis: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const pattern = searchQuery.split(",").join("|");
 
-  const fetchEmployeeReviews = async (supabase: SupabaseClient<DatabaseTypes>) => {
+  const fetchEmployeeReviews = async (signal: AbortSignal) => {
     if (pattern.length === 0) return;
-    return (await supabase.rpc("employee_review_keyword_analysis", {
-      pattern,
-    })) as PostgrestResponse<peer_reviews>;
-  };
-
-  const handleSearchSubmit = async (event: SyntheticEvent) => {
-    event.preventDefault();
     setIsLoading(true);
-    const res = await fetchEmployeeReviews(supabase);
-    if (!res) return setIsLoading(false);
+    setTimeout(async () => {
+      let res: PostgrestResponse<peer_reviews> | null = null;
+      const rpc = "employee_review_keyword_analysis";
+      if (signal) res = (await supabase.rpc(rpc, { pattern }).abortSignal(signal)) as PostgrestResponse<peer_reviews>;
+      if (!signal) res = (await supabase.rpc(rpc, { pattern })) as PostgrestResponse<peer_reviews>;
+      if (!res) return setIsLoading(false);
+      const { data, error } = res;
+      if (error) {
+        // Ignore error if the error is a "Aborted request"
+        if (Number(error.code) === 20) return setIsLoading(false);
 
-    const { data, error } = res;
-    if (error) toast.error(error.message);
-    if (data) setReviews(data);
-    setIsLoading(false);
+        setIsLoading(false);
+        toast.error(error.message);
+        return;
+      }
+      if (data) setReviews(data);
+      setIsLoading(false);
+    }, 500);
   };
+
+  useEffect(() => {
+    const ac = new AbortController();
+    const signal = ac.signal;
+    fetchEmployeeReviews(signal);
+    return () => ac.abort();
+  }, [searchQuery]);
+
   const analysis = employeeReviewKeywordAnalysis(reviews, pattern);
 
   return (
@@ -45,7 +56,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
         <title>Dex | Keyword Analysis - Employee Peer Reviews</title>
       </Head>
       <section>
-        <form className='w-[100%] max-w-[600px] mx-auto mt-8' onSubmit={handleSearchSubmit}>
+        <form className='w-[100%] max-w-[600px] mx-auto mt-8' onSubmit={(e) => e.preventDefault()}>
           <div className='mx-2 flex flex-col'>
             <label htmlFor='Name' className='font-Poppins w-[100%] flex m-2 items-center justify-between'>
               Keyword Analysis - Employee Peer Reviews
@@ -58,16 +69,14 @@ const EmployeeReviewsAnalysis: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target?.value.trim().toLowerCase())}
               />
-              <button className='formButton w-auto flex gap-2 justify-center items-center'>
+              <button disabled className='formButton w-auto flex gap-2 justify-center items-center'>
                 <span className='text-xl flex'>
-                  {isLoading && SnowFlakeLoading} {!isLoading && !reviews && <HiSearchCircle />}
-                  {!isLoading && reviews && <IoMdRefreshCircle />}
+                  {isLoading && SnowFlakeLoading} {!isLoading && <HiSearchCircle />}
                 </span>
-                {!reviews ? "Search" : "Refresh"}
               </button>
             </div>
             <div>
-              <EmployeeReviewsKeywordAnalysisResults isLoading={isLoading} analysis={analysis} />
+              <EmployeeReviewsKeywordAnalysisResults isLoading={isLoading} analysis={analysis} pattern={pattern} />
             </div>
           </div>
         </form>

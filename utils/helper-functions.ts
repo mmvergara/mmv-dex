@@ -149,35 +149,24 @@ const getCommentsFromPR_required_ratings = (required_ratings: peer_review_requir
 export const employeeReviewKeywordAnalysis = (evaluations: peer_reviews[] | null, pattern: string) => {
   if (!pattern) return null;
   if (!evaluations) return null;
-
   const reviewKeywords = pattern.split("|");
   const keywordsAnalysis: KeywordsAnalysis = {};
 
   for (const evaluation of evaluations) {
-    const seenKeyword = new Set<string>();
     const comments = getCommentsFromPR_required_ratings(evaluation.evaluation.required_rating);
     const optionalComments = Object.values(evaluation.evaluation.optional_rating).join(" ");
     const allComments = `${comments} ${optionalComments}`;
 
     for (const keyword of reviewKeywords) {
-      if (seenKeyword.has(keyword)) continue;
-      seenKeyword.add(keyword);
-
       if (allComments.includes(keyword)) {
         keywordsAnalysis[keyword] = {
           reviewsContainingKeyword: (keywordsAnalysis[keyword]?.reviewsContainingKeyword || 0) + 1,
           keywordOccurrences:
             (keywordsAnalysis[keyword]?.keywordOccurrences || 0) + countOccurrences(allComments, keyword),
         };
-      } else {
-        keywordsAnalysis[keyword] = {
-          reviewsContainingKeyword: 0,
-          keywordOccurrences: 0,
-        };
       }
     }
   }
-
   return Object.entries(keywordsAnalysis);
 };
 

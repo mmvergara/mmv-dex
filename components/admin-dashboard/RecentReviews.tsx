@@ -4,7 +4,6 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { BiLinkAlt } from "react-icons/bi";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { DateSchema } from "yup";
 
 type props = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
@@ -63,7 +62,7 @@ const RecentReviews: React.FC<props> = ({ setIsLoading }) => {
               <>
                 <article className='p-1 px-2 flex justify-between items-center'>
                   <div>
-                    <p className="font-semibold">Review ID : {r.id}</p>
+                    <p className='font-semibold'>Review ID : {r.id}</p>
                     <div>{new Date(r.inserted_at).toLocaleDateString()}</div>
                   </div>
                   <Link href={`/p/peer-review/${r.id}`} className='bg-emerald-500 text-white rounded-sm p-2 text-xl '>
