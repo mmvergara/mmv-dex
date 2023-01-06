@@ -9,6 +9,8 @@ import { DatabaseTypes } from "../../../types/db/db-types";
 import uniqid from "uniqid";
 import sharp from "sharp";
 
+// NOT WORKING ON VERCEL FREE TIER DEPLOYMENT PLEASE READ
+// https://vercel.com/docs/concepts/functions/serverless-functions#execution-timeout
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const supabase = createServerSupabaseClient<DatabaseTypes>({ req, res });
   const form = new Formidable({ multiples: true, keepExtensions: true });

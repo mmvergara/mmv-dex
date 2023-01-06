@@ -47,7 +47,7 @@ const EmployeeReviewsAnalysis: React.FC = () => {
     fetchEmployeeReviews(signal);
     return () => ac.abort();
   }, [searchQuery]);
-
+  console.log(reviews)
   const analysis = employeeReviewKeywordAnalysis(reviews, pattern);
 
   return (

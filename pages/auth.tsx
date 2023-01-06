@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   const [formState, setFormState] = useState<"Login" | "Signup">("Login");
   const { SnowFlakeLoading, setIsLoading } = useSnowFlakeLoading();
   const [authError, setAuthError] = useState<null | string>(null);
-  const toggleFormState = () =>
+  const toggleFormState = () => 
     setFormState((prev) => {
       if (prev === "Login") return "Signup";
       return "Login";
