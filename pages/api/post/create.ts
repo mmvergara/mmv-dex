@@ -17,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // https://stackoverflow.com/questions/60684227/api-resolved-without-sending-a-response-in-nextjs
   const result = await new Promise((resolved, reject) => {
     form.parse(req, async (err, fields, files) => {
-      files.image;
       try {
         if (!allowedMethod(req, "PUT")) throw newError("Method not allowed", 405);
         if (err) throw newError("Error parsing request", 500);
@@ -52,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           quality = 2;
           compressionLevel = 9;
         }
-
         // Process Image
         const imgBuffer = await sharp(img.filepath).toFormat("png").png({ quality, compressionLevel }).toBuffer();
 
@@ -88,8 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
   });
-  console.log(result);
-  if (result) return res.status(201).send({ data: result, error: null });
+  return res.status(201).send({ data: result, error: null });
 }
 
 export const config = {
