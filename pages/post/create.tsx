@@ -55,7 +55,6 @@ const CreatePost: React.FC = () => {
 
     // Upload post to supabase or vercel server
     try {
-
       if (uploadServer === "supabase") {
         const { error } = await supabase.functions.invoke("createpost", { body: formData });
         if (error) throw new Error(error.message);
@@ -64,7 +63,7 @@ const CreatePost: React.FC = () => {
       formik.resetForm();
       setImage(null);
       toast.success("Post Uploaded");
-      console.log()
+      console.log();
     } catch (e) {
       // Axios Error Parse also works on normal throw new Error()
       const { error } = axiosErrorParse(e);
@@ -98,7 +97,6 @@ const CreatePost: React.FC = () => {
   const postImageInputRef = useRef<HTMLInputElement>(null!);
   const titleError = formik.touched.title && formik.errors.title;
   const descriptionError = formik.touched.description && formik.errors.description;
-
 
   return (
     <>
@@ -150,6 +148,7 @@ const CreatePost: React.FC = () => {
             setImage(e.target.files[0]);
           }}
           ref={postImageInputRef}
+          accept='image/x-png,image/jpeg'
           hidden
         />
 
