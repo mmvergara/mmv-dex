@@ -1,7 +1,7 @@
 
 #  Documentation
 [MMV Dex / Docs](https://mmv-docs.vercel.app/docs/category/dex)
-
+Deployment Date: Jan 6, 2023
 # Installation
 
 ## 1. Create a new supabase project

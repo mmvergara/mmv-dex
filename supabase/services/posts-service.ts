@@ -1,6 +1,6 @@
-import { posts, profiles } from "../../types/db/db-types";
-import { SupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { DatabaseTypes } from "../../types/db/db-types";
+import { posts, profiles } from '../../types/db/db-types';
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { DatabaseTypes } from '../../types/db/db-types';
 
 // getPagination codeby: silentworks https://github.com/supabase/supabase/discussions/1223
 export const getPagination = (page: number, size: number) => {
@@ -17,15 +17,15 @@ export const getPosts = async (
 ) => {
   if (paginate) {
     return await supabase
-      .from("posts")
-      .select("id,title,description,created_at,image_path, profiles( * )", { count: "exact" })
-      .order("created_at", { ascending: orderAscending })
+      .from('posts')
+      .select('id,title,description,created_at,image_path, profiles( * )', { count: 'exact' })
+      .order('created_at', { ascending: orderAscending })
       .range(paginate.from, paginate.to);
   }
   return supabase
-    .from("posts")
-    .select("id,title,description,created_at,image_path, profiles( * )", { count: "exact" })
-    .order("created_at", { ascending: orderAscending });
+    .from('posts')
+    .select('id,title,description,created_at,image_path, profiles( * )', { count: 'exact' })
+    .order('created_at', { ascending: orderAscending });
 };
 
 export const getReviews = async (
@@ -35,29 +35,29 @@ export const getReviews = async (
 ) => {
   if (paginate) {
     return await supabase
-      .from("peer_reviews")
-      .select("*", { count: "exact" })
-      .order("inserted_at", { ascending: orderAscending })
+      .from('peer_reviews')
+      .select('*', { count: 'exact' })
+      .order('inserted_at', { ascending: orderAscending })
       .range(paginate.from, paginate.to);
   }
   return supabase
-    .from("peer_reviews")
-    .select("*", { count: "exact" })
-    .order("inserted_at", { ascending: orderAscending });
+    .from('peer_reviews')
+    .select('*', { count: 'exact' })
+    .order('inserted_at', { ascending: orderAscending });
 };
 
 export const getPostById = async (supabase: SupabaseClient<DatabaseTypes>, postid: string) =>
-  await supabase.from("posts").select("*,profiles(id,email)").eq("id", postid).maybeSingle();
+  await supabase.from('posts').select('*,profiles(id,email)').eq('id', postid).maybeSingle();
 
 export const getUserPostsById = async (supabase: SupabaseClient<DatabaseTypes>, user_id: string, limit?: number) => {
   if (limit) {
     return await supabase
-      .from("posts")
-      .select("id,title,description,created_at,image_path,author")
-      .eq("author", user_id)
+      .from('posts')
+      .select('id,title,description,created_at,image_path,author')
+      .eq('author', user_id)
       .limit(limit);
   }
-  return await supabase.from("posts").select("id,title,description,created_at,image_path").eq("id", user_id);
+  return await supabase.from('posts').select('id,title,description,created_at,image_path').eq('id', user_id);
 };
 
 export const getUserPostsTitleById = async (
@@ -67,30 +67,30 @@ export const getUserPostsTitleById = async (
 ) => {
   if (limit) {
     return await supabase
-      .from("posts")
-      .select("id,title,created_at")
-      .eq("author", user_id)
-      .order("created_at", { ascending: false })
+      .from('posts')
+      .select('id,title,created_at')
+      .eq('author', user_id)
+      .order('created_at', { ascending: false })
       .limit(limit);
   }
   return await supabase
-    .from("posts")
-    .select("id,title,created_at")
-    .eq("id", user_id)
-    .order("created_at", { ascending: false });
+    .from('posts')
+    .select('id,title,created_at')
+    .eq('id', user_id)
+    .order('created_at', { ascending: false });
 };
 
 export type postWithProfilesResponse = Awaited<ReturnType<typeof getPosts>>;
-export type postDetails = postWithProfilesResponse["data"];
+export type postDetails = postWithProfilesResponse['data'];
 export type postDetailsQuery = {
-  data: postWithProfilesResponse["data"];
-  error: postWithProfilesResponse["error"];
+  data: postWithProfilesResponse['data'];
+  error: postWithProfilesResponse['error'];
   hasMore: boolean;
 };
 export type postDetailProps = {
-  id: posts["id"];
-  title: posts["title"];
-  description: posts["description"];
+  id: posts['id'];
+  title: posts['title'];
+  description: posts['description'];
   image_url: string;
-  created_at: posts["created_at"];
-} & { email: profiles["email"] };
+  created_at: posts['created_at'];
+} & { email: profiles['email'] };
